@@ -25,7 +25,7 @@ echo "ls ../"
 ls ../
 echo "pwd"
 pwd
-git clone https://github.com/huggingface/diffusers ./diffusers
+git clone https://github.com/huggingface/diffusers
 
 echo "ls"
 ls
@@ -33,5 +33,11 @@ echo "ls ../"
 ls ../
 echo "pwd"
 pwd
+
+cd diffusers
+pip install -e .
+cd examples
+pip install -r requirements.txt
+cd ../../
 pip install -U -r ./diffusers/examples/dreambooth/requirements.txt
 accelerate config default
