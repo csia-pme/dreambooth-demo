@@ -12,6 +12,6 @@ source .venv/bin/activate
 # Install the requirements
 pip install --requirement requirements.txt
 
-git clone https://github.com/huggingface/diffusers .
+git clone https://github.com/huggingface/diffusers ./diffusers
 pip install -U -r ./diffusers/examples/dreambooth/requirements.txt
 accelerate config default
