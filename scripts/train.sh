@@ -11,7 +11,7 @@ export OUTPUT_DIR="../model/$SUBJECT_NAME"
 mkdir -p OUTPUT_DIR
 export CLASS_DIR="../class"
 
-  accelerate launch /diffusers/examples/dreambooth/train_dreambooth.py \
+  accelerate launch ../diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME  \
   --instance_data_dir=$INSTANCE_DIR \
   --class_data_dir=$CLASS_DIR \
