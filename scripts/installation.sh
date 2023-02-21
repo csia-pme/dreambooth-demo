@@ -1,7 +1,7 @@
 #!bin/bash
 
 apt update
-apt install git
+apt install -y git
 apt install -y python3-pip
 pip3 install --upgrade pip
 
