@@ -19,6 +19,8 @@ train-job:
   stage: train
   image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
   script:
+    - chmod +x ./scripts/installation.sh
     - sh ./scripts/installation.sh
+    - chmod +x ./scripts/train.sh
     - sh ./scripts/train.sh
     - python ./scripts/infere.py
