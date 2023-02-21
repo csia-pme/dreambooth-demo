@@ -10,8 +10,14 @@ python3 -m venv .venv
 # Activate the virtual environment
 source .venv/bin/activate
 # Install the requirements
-pip install --requirement requirements.txt
-
+ls 
+ls ../
+pwd
+pip install --requirement ../requirements.txt
+ls
+ls ../
+pwd
 git clone https://github.com/huggingface/diffusers ./diffusers
+
 pip install -U -r ./diffusers/examples/dreambooth/requirements.txt
 accelerate config default
