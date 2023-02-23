@@ -202,19 +202,22 @@ One problem we would encounter running the pipeline "as is" is that pods are dep
 
 ```yaml
 runners:
-  config: 
+  config: |
     [[runners]]
       [runners.kubernetes]
         namespace = "{{.Release.Namespace}}"
         image = "ubuntu:16.04"
       [runners.kubernetes.node_selector]
-        "nvidia.com/gpu.present": true
+        "nvidia.com/gpu.present" = "true"
 ```
   
 Finally we can install the runner on the cluster
 ```bash
 helm upgrade --install --namespace dreambooth-experience gitlab-runner -f ./values.yaml gitlab/gitlab-runner
 ```
+If you need to update an existing runner use 
+```bash
+helm upgrade --install --namespace dreambooth-experience gitlab-runner -f ./values.yaml gitlab/gitlab-runner
 
 You should now see your runner in the gitlab UI > Repository > Settings > CI/CD > Runners, correctly registered as a Project Runner.
 

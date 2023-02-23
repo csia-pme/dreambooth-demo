@@ -11,7 +11,7 @@ if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
 
-export MODEL_NAME="CompVis/stable-diffusion-v1-4"
+export MODEL_NAME="runwayml/stable-diffusion-v1-5"
 export INSTANCE_DIR="../data/$SUBJECT_NAME"
 mkdir -p INSTANCE_DIR
 export OUTPUT_DIR="../model/$SUBJECT_NAME"
@@ -33,6 +33,6 @@ export CLASS_DIR="../class"
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=1000 \
+  --max_train_steps=800 \
   --checkpointing_steps=100
 fi
