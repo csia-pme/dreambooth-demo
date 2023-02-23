@@ -1,5 +1,6 @@
 stages:
   - train
+  - report
 
 variables:
   SUBJECT_NAME: tony  # the name of the person we want to train the model on
