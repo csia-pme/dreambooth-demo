@@ -25,4 +25,10 @@ train-job:
     - sh ./installation.sh
     - chmod +x ./train.sh
     - sh ./train.sh
-    - python ./infere.py
+    - echo "ls"
+    - ls
+    - echo "ls ../"
+    - ls ../
+    - echo "pwd"
+    - pwd
+    - python3 ./infere.py

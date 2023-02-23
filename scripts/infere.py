@@ -1,7 +1,9 @@
 from diffusers import StableDiffusionPipeline
 import torch
 
-model_id = 'path-to-your-trained-model'
+print('Starting inference...')
+
+model_id = "../model/$SUBJECT_NAME"
 pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to('cuda')
 
 style = ', beautiful face, symmetrical, centered, dramatic angle, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, artstation, award winning, rgb , unreal engine, octane render, cinematic light, macro, depth of field, blur, red light and clouds from the back, highly detailed epic cinematic concept art CG render made in Maya, Blender and Photoshop, octane render, excellent composition, dynamic dramatic cinematic lighting, aesthetic, very inspirational, arthouse by Henri Cartier Bresson'
@@ -23,3 +25,7 @@ for subject in subjects:
 
     image_name = subject.replace(' ', '-') + '.png'
     image.save(image_name)
+
+    print('Image generated ' + image_name)
+
+print('Inference done!')
