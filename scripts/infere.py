@@ -22,11 +22,11 @@ subjects = [
 
 for subject in subjects:
 
+    image_name = subject.replace(' ', '-') + '.png'
     print('Inference of ' + image_name)
     prompt = subject + subjectGender + style 
     image = pipe(prompt, num_inference_steps=50, guidance_scale=7.5).images[0]
 
-    image_name = subject.replace(' ', '-') + '.png'
     image.save('../images/' + os.environ.get('SUBJECT_NAME') + '/' + image_name)
 
 
