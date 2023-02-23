@@ -21,9 +21,7 @@ mkdir -p OUTPUT_DIR
   accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME  \
   --instance_data_dir=$INSTANCE_DIR \
-# --class_data_dir=$CLASS_DIR \
   --output_dir=$OUTPUT_DIR \
-# --with_prior_preservation --prior_loss_weight=1.0 \
   --instance_prompt="a photo of $SUBJECT_NAME the person" \
   --class_prompt="a photo of a person" \
   --resolution=512 \
@@ -32,7 +30,9 @@ mkdir -p OUTPUT_DIR
   --learning_rate=5e-6 \
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
+  --max_train_steps=10 
+# --with_prior_preservation --prior_loss_weight=1.0 \
+# --class_data_dir=$CLASS_DIR \
 # --num_class_images=100 \
-  --max_train_steps=10 \
 # --checkpointing_steps=100
 fi
