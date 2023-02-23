@@ -19,6 +19,7 @@ train-job:
   stage: train
   image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
   script:
+    - nvidia-smi
     - cd ./scripts
     - chmod +x ./installation.sh
     - sh ./installation.sh

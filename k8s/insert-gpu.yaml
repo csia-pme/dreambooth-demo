@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: request-gpu
+  annotations:
+    policies.kyverno.io/title: Change Gitlab CI/CD Pods to request a gpu resource
+spec:
+  rules:
+    - name: request-gpu
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      preconditions:
+        any:
+        - key: "{{request.object.metadata.annotations.\"gitlab-runner.cradle.bio/wants\"}}"
+          operator: Equals
+          value: "nvidia-gpu"
+      mutate:
+        patchStrategicMerge:
+          spec:
+            containers:
+              - (name): build
+                resources:
+                  requests:
+                    +(nvidia.com/gpu) : 1
+                  limits:
+                    +(nvidia.com/gpu) : 1

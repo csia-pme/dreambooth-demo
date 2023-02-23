@@ -63,7 +63,7 @@ git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
 
 I used the personal access token in `./secrets` folder to clone the repo. Now I need to export config to run the training
 
-// TODO update the training comment to use `./scripts/train.ss`
+// TODO update the training comment to use `./scripts/train.sh`
 ```bash
 mkdir -p /model
 mkdir -p /class
@@ -195,6 +195,21 @@ rbac:
       verbs: ["create", "patch", "delete"]
 #[...]
 ```
+
+
+## Assign GPU to the pipeline pods
+One problem we would encounter running the pipeline "as is" is that pods are deployed on gpuless nodes. We can fix this by adding a nodeSelector to the pipeline pods.
+
+```yaml
+runners:
+  config: 
+    [[runners]]
+      [runners.kubernetes]
+        namespace = "{{.Release.Namespace}}"
+        image = "ubuntu:16.04"
+      [runners.kubernetes.node_selector]
+        "nvidia.com/gpu.present": true
+```
   
 Finally we can install the runner on the cluster
 ```bash
@@ -224,6 +239,17 @@ train-job:
     - python ./scripts/infere.py
 
 ```
+
+
+### OLD
+update config.toml on the runner to add the following lines
+
+```sh
+kubectl exec -it gitlab-runner-54dc59c857-fcqhg   --namespace=dreambooth-experience -- /bin/bash
+```
+```toml
+nvidia.com/gpu.present=tru
+
 
 ### OLD
 First let's save the command to run the runner
