@@ -11,28 +11,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 # Install the requirements
 
-echo "ls"
-ls
-echo "ls ../"
-ls ../
-echo "pwd"
-pwd
 pip install --requirement ../requirements.txt
 
-echo "ls"
-ls
-echo "ls ../"
-ls ../
-echo "pwd"
-pwd
 git clone https://github.com/huggingface/diffusers
-
-echo "ls"
-ls
-echo "ls ../"
-ls ../
-echo "pwd"
-pwd
 
 cd diffusers
 pip install -e .

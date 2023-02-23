@@ -16,7 +16,7 @@ export INSTANCE_DIR="../data/$SUBJECT_NAME"
 mkdir -p INSTANCE_DIR
 export OUTPUT_DIR="../model/$SUBJECT_NAME"
 mkdir -p OUTPUT_DIR
-#export CLASS_DIR="../class"
+export CLASS_DIR="../class"
 
   accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME  \
@@ -30,9 +30,9 @@ mkdir -p OUTPUT_DIR
   --learning_rate=5e-6 \
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
-  --max_train_steps=10 
-# --with_prior_preservation --prior_loss_weight=1.0 \
-# --class_data_dir=$CLASS_DIR \
-# --num_class_images=100 \
-# --checkpointing_steps=100
+  --max_train_steps=800 \
+  --with_prior_preservation --prior_loss_weight=1.0 \
+  --class_data_dir=$CLASS_DIR \
+  --num_class_images=100 \
+  --checkpointing_steps=100
 fi

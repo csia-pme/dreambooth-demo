@@ -1,8 +1,5 @@
 echo "# Inference report for $SUBJECT_NAME" >> report.md
-echo "pwd"
-pwd
-echo "ls"
-ls
+
 echo "ls ./images/$SUBJECT_NAME"
 ls "./images/$SUBJECT_NAME"
 
