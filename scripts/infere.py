@@ -1,5 +1,6 @@
 from diffusers import StableDiffusionPipeline
 import torch
+import os
 
 print('Starting inference...')
 

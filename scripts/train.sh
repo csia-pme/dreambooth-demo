@@ -33,6 +33,6 @@ export CLASS_DIR="../class"
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=200 \
+  --max_train_steps=100 \
   --checkpointing_steps=100
 fi
