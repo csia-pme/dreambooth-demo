@@ -9,4 +9,4 @@ do
   echo "![]($f" + ' "Generated image")' >> report.md
 done
 
-cml comment create --target=commit report.md
+cml comment create --target=commit --publish report.md
