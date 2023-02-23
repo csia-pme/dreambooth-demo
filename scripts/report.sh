@@ -12,7 +12,7 @@ do
   echo "Processing $f file..."
   # take action on each file. $f store current file name
   echo "## $f" >> report.md
-  echo "![]($f" + ' "Generated image")' >> report.md
+  echo "![]($f)" >> report.md
 done
 
 cml comment create --target=commit --publish report.md
