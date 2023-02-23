@@ -32,4 +32,19 @@ train-job:
     - ls ../
     - echo "pwd"
     - pwd
+    - mkdir -p "../images/$SUBJECT_NAME"
     - python3 ./infere.py
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - "./images/$SUBJECT_NAME"
+report:
+  stage: report
+  image: iterativeai/cml:0-dvc2-base1
+  needs:
+    - job: train
+      artifacts: true
+  variables:
+    REPO_TOKEN: $CML_PAT_TOKEN
+  script:
+    - sh ./scripts/report.sh
