@@ -34,5 +34,5 @@ export CLASS_DIR="../class"
   --lr_warmup_steps=0 \
   --num_class_images=100 \
   --max_train_steps=200 \
-  --checkpointing_steps=0
+  --checkpointing_steps=100
 fi
