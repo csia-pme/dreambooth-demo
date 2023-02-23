@@ -213,7 +213,7 @@ runners:
   
 Finally we can install the runner on the cluster
 ```bash
-helm install --namespace dreambooth-experience gitlab-runner -f ./values.yaml gitlab/gitlab-runner
+helm upgrade --install --namespace dreambooth-experience gitlab-runner -f ./values.yaml gitlab/gitlab-runner
 ```
 
 You should now see your runner in the gitlab UI > Repository > Settings > CI/CD > Runners, correctly registered as a Project Runner.

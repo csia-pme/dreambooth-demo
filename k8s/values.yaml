@@ -321,7 +321,7 @@ runners:
         namespace = "{{.Release.Namespace}}"
         image = "ubuntu:16.04"
       [runners.kubernetes.node_selector]
-        "nvidia.com/gpu.present": true
+        "nvidia.com/gpu.present" = true
 
   ## Which executor should be used
   ##
