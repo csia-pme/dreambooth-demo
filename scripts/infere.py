@@ -23,6 +23,7 @@ def infereFromModelId(model_id, pipe) :
     for prompt in prompts:
 
         image_name = prompt.replace(' ', '-')
+
         image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
         image.save('../images/' 
             + os.environ.get('SUBJECT_NAME') + '/' 
@@ -37,9 +38,12 @@ def infereFromModelId(model_id, pipe) :
 
         print('Image generated ' + image_name)
 
-
-
 print('Starting inference...')
+
+# final model
+final_model = '../model/' + os.environ.get('SUBJECT_NAME')
+pipe = StableDiffusionPipeline.from_pretrained(final_model, torch_dtype=torch.float16).to('cuda')
+infereFromModelId(final_model, pipe)
 
 # list all intermediate models saved
 listOfIntermetiateModels = [f.path for f in os.scandir('../model/' + os.environ.get('SUBJECT_NAME')) if f.is_dir()]
@@ -56,14 +60,8 @@ for model_name in listOfIntermetiateModels :
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
         text_encoder = CLIPTextModel.from_pretrained(model_name + "/text_encoder")
 
-        pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16)
-        pipeline.to("cuda")
+        pipeline = StableDiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to("cuda")
 
         infereFromModelId(model_id, pipeline)
-
-# final model
-final_model = '../model/' + os.environ.get('SUBJECT_NAME')
-pipe = StableDiffusionPipeline.from_pretrained(final_model, torch_dtype=torch.float16).to('cuda')
-infereFromModelId(final_model, pipe)
 
 print('Inference done!')
