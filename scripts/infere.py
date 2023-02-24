@@ -19,6 +19,10 @@ def infereFromModelId(model_id, pipe) :
         'a photo of ' + subjectName + ' as president of the USA',
         'a photo of ' + subjectName + ' as an elf'
         ]
+    if model_id:
+        iteration = int(''.join(filter(str.isdigit, model_id)));
+    else :
+        iteration = 'final'
 
     for prompt in prompts:
 
@@ -28,12 +32,12 @@ def infereFromModelId(model_id, pipe) :
         image.save('../images/' 
             + os.environ.get('SUBJECT_NAME') + '/' 
             + image_name + '/'
-            + int(''.join(filter(str.isdigit, model_id))) + '-clean.png')
+            + iteration + '-clean.png')
         image2 = pipe(prompt + subjectGender + realisticStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
         image2.save('../images/' 
             + os.environ.get('SUBJECT_NAME') + '/' 
             + image_name + '/'
-            + int(''.join(filter(str.isdigit, model_id))) + '-realistic.png')
+            + iteration + '-realistic.png')
 
 
         print('Image generated ' + image_name)
