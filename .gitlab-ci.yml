@@ -16,7 +16,6 @@ cache:
     - .cache/pip
     - class/
 
-
 train-job:
   stage: train
   image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
@@ -27,12 +26,6 @@ train-job:
     - sh ./installation.sh
     - chmod +x ./train.sh
     - sh ./train.sh
-    - echo "ls"
-    - ls
-    - echo "ls ../"
-    - ls ../
-    - echo "pwd"
-    - pwd
     - mkdir -p "../images/$SUBJECT_NAME"
     - python3 ./infere.py
   artifacts:
