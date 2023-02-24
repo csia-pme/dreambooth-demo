@@ -47,7 +47,9 @@ listOfIntermetiateModels = [f.path for f in os.scandir('../model/' + os.environ.
 
 # intermediate models
 for model_name in listOfIntermetiateModels :
-    infereFromModelId(model_name);
+    # if model_name contains "checkpoint" then it's an intermediate model infere from it
+    if 'checkpoint' in model_name :
+        infereFromModelId(model_name);      
 
 # final model
 infereFromModelId('../model/' + os.environ.get('SUBJECT_NAME'))
