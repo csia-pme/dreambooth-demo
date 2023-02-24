@@ -21,7 +21,7 @@ def infereFromModelId(model_id, pipe) :
         ]
     print('Model id: ' + model_id)
     if model_id:
-        iteration = int(''.join(filter(str.isdigit, model_id)));
+        iteration = ''.join(filter(str.isdigit, model_id));
     else :
         iteration = 'final'
         
