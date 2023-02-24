@@ -1,10 +1,9 @@
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionPipeline, DiffusionPipeline, UNet2DConditionModel
+from transformers import CLIPTextModel
 import torch
 import os
 
-def infereFromModelId(model_id) :
-
-    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to('cuda')
+def infereFromModelId(model_id, pipe) :
 
     cleanStyle = ', beautiful face, symmetrical, centered, dramatic angle, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, 8k, award winning, rgb , unreal engine, octane render, cinematic light, depth of field, blur'
     realisticStyle = 'medium closeup photo, detailed (wrinkles, blemishes!, folds!, moles, viens, pores!!, skin imperfections:1.1), (wearing sexy lingerie set details:1.1), highly detailed glossy eyes, (looking at the camera), specular lighting, dslr, ultra quality, sharp focus, tack sharp, dof, film grain, centered, Fujifilm XT3, crystal clear'
@@ -47,12 +46,24 @@ listOfIntermetiateModels = [f.path for f in os.scandir('../model/' + os.environ.
 
 # intermediate models
 for model_name in listOfIntermetiateModels :
-    # if model_name contains "checkpoint" then it's an intermediate model infere from it
     if 'checkpoint' in model_name :
-        infereFromModelId(model_name);      
+        # if model_name contains "checkpoint" then it's an intermediate model infere from it
+        # Load the pipeline with the same arguments (model, revision) that were used for training
+        model_id = "runwayml/stable-diffusion-v1-5"
+
+        unet = UNet2DConditionModel.from_pretrained(model_name + "/unet")
+
+        # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
+        text_encoder = CLIPTextModel.from_pretrained(model_name + "/text_encoder")
+
+        pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16)
+        pipeline.to("cuda")
+
+        infereFromModelId(model_id, pipeline)
 
 # final model
-infereFromModelId('../model/' + os.environ.get('SUBJECT_NAME'))
+pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to('cuda')
+infereFromModelId('../model/' + os.environ.get('SUBJECT_NAME'), pipe)
 
 
 print('Inference done!')
