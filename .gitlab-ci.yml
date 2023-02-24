@@ -14,7 +14,7 @@ variables:
 cache:
   paths:
     - .cache/pip
-    - class/
+    - class
 
 train-job:
   stage: train

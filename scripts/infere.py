@@ -26,20 +26,16 @@ def infereFromModelId(model_id, pipe) :
         iteration = 'final'
         
     for prompt in prompts:
+        path = '../images/' + os.environ.get('SUBJECT_NAME') + '/' + image_name;
+        if not os.path.exists(path) :
+            os.makedirs(path)
 
         image_name = prompt.replace(' ', '-')
 
         image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
-        image.save('../images/' 
-            + os.environ.get('SUBJECT_NAME') + '/' 
-            + image_name + '/'
-            + iteration + '-clean.png')
+        image.save(path + '/' + iteration + '-clean.png')
         image2 = pipe(prompt + subjectGender + realisticStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
-        image2.save('../images/' 
-            + os.environ.get('SUBJECT_NAME') + '/' 
-            + image_name + '/'
-            + iteration + '-realistic.png')
-
+        image2.save(path + '/' + iteration + '-realistic.png')
 
         print('Image generated ' + image_name)
 
