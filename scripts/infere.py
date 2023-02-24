@@ -6,7 +6,7 @@ import os
 def infereFromModelId(model_id, pipe) :
 
     cleanStyle = ', beautiful face, symmetrical, centered, dramatic angle, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, 8k, award winning, rgb , unreal engine, octane render, cinematic light, depth of field, blur'
-    realisticStyle = 'medium closeup photo, detailed (wrinkles, blemishes!, folds!, moles, viens, pores!!, skin imperfections:1.1), (wearing sexy lingerie set details:1.1), highly detailed glossy eyes, (looking at the camera), specular lighting, dslr, ultra quality, sharp focus, tack sharp, dof, film grain, centered, Fujifilm XT3, crystal clear'
+    realisticStyle = 'medium closeup photo, detailed (wrinkles, blemishes!, folds!, viens, pores!!, skin imperfections:1.1), (wearing sexy lingerie set details:1.1), highly detailed glossy eyes, (looking at the camera), specular lighting, dslr, ultra quality, sharp focus, tack sharp, dof, film grain, centered, Fujifilm XT3, crystal clear'
 
     subjectName = os.environ.get('SUBJECT_NAME')
     subjectGender = ' ' + os.environ.get('SUBJECT_GENDER', '')
@@ -19,11 +19,12 @@ def infereFromModelId(model_id, pipe) :
         'a photo of ' + subjectName + ' as president of the USA',
         'a photo of ' + subjectName + ' as an elf'
         ]
-    if model_id == '':
-        iteration = 'final'
-    else :
+    print('Model id: ' + model_id)
+    if model_id:
         iteration = int(''.join(filter(str.isdigit, model_id)));
-
+    else :
+        iteration = 'final'
+        
     for prompt in prompts:
 
         image_name = prompt.replace(' ', '-')
