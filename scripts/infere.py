@@ -62,8 +62,8 @@ for model_name in listOfIntermetiateModels :
         infereFromModelId(model_id, pipeline)
 
 # final model
-pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to('cuda')
-infereFromModelId('../model/' + os.environ.get('SUBJECT_NAME'), pipe)
-
+final_model = '../model/' + os.environ.get('SUBJECT_NAME')
+pipe = StableDiffusionPipeline.from_pretrained(final_model, torch_dtype=torch.float16).to('cuda')
+infereFromModelId(final_model, pipe)
 
 print('Inference done!')
