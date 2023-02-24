@@ -13,7 +13,7 @@ subjectGender = ' ' + os.environ.get('SUBJECT_GENDER', '')
 subjects = [
     'a portrait of ' + subjectName + '' , 
     'a portrait of ' + subjectName + ' as a medieval knight', 
-    'a portrait of ' + subjectName + ' as Ironman wihout helmet',
+    'a portrait of ' + subjectName + ' as Ironman helmetless',
     'a portrait of ' + subjectName + ' as a medieval swiss person',
     'a portrait of ' + subjectName + ' as a 17 century noble',
     'a portrait of ' + subjectName + ' as president of the USA',
