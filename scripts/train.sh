@@ -26,5 +26,5 @@ export CLASS_DIR="../class"
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=1000
+  --max_train_steps=1200
 fi
