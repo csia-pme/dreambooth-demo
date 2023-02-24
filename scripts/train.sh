@@ -1,12 +1,5 @@
 #!bin/bash
 
-echo "ls"
-ls
-echo "ls ../"
-ls ../
-echo "pwd"
-pwd
-
 if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
@@ -27,11 +20,11 @@ export CLASS_DIR="../class"
   --instance_prompt="a photo of $SUBJECT_NAME the person" \
   --class_prompt="a photo of a person" \
   --resolution=512 \
-  --train_batch_size=1 \
+  --train_batch_size=2 \
   --gradient_accumulation_steps=1 \
-  --learning_rate=5e-6 \
+  --learning_rate=3e-6 \
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=800
+  --max_train_steps=1000
 fi
