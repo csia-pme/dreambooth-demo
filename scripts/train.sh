@@ -17,14 +17,16 @@ export CLASS_DIR="../class"
   --class_data_dir=$CLASS_DIR \
   --output_dir=$OUTPUT_DIR \
   --with_prior_preservation --prior_loss_weight=1.0 \
-  --instance_prompt="a portrait of $SUBJECT_NAME a person" \
-  --class_prompt="a portrait of a person" \
+  --instance_prompt="a photo of $SUBJECT_NAME person" \
+  --class_prompt="a photo of a person" \
   --resolution=512 \
   --train_batch_size=1 \
   --gradient_accumulation_steps=1 \
-  --learning_rate=2e-6 \
+  --learning_rate=5e-6 \
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=1200
+  --max_train_steps=100 \
+  --train_text_encoder \
+  --checkpointing_steps=40
 fi
