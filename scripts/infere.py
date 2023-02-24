@@ -19,10 +19,10 @@ def infereFromModelId(model_id, pipe) :
         'a photo of ' + subjectName + ' as president of the USA',
         'a photo of ' + subjectName + ' as an elf'
         ]
-    if model_id:
-        iteration = int(''.join(filter(str.isdigit, model_id)));
-    else :
+    if model_id == '':
         iteration = 'final'
+    else :
+        iteration = int(''.join(filter(str.isdigit, model_id)));
 
     for prompt in prompts:
 
