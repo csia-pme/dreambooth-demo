@@ -61,7 +61,7 @@ The I cloned this repository to have data
 git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
 ````
 
-I used the personal access token in `./secrets` folder to clone the repo. Now I need to export config to run the training
+I used the personal access token in `./secrets` folder to clone the repo you should make your own and have the possibility to save it there if you want, the folder should be gitignored. Now I need to export config to run the training
 
 // TODO update the training comment to use `./scripts/train.sh`
 ```bash
@@ -243,27 +243,34 @@ train-job:
 
 ```
 
+### state observation
 
-### OLD
-update config.toml on the runner to add the following lines
+To better understant what is  where in the pod here are a few results of LS commands
 
-```sh
-kubectl exec -it gitlab-runner-54dc59c857-fcqhg   --namespace=dreambooth-experience -- /bin/bash
-```
-```toml
-nvidia.com/gpu.present=tru
-
-
-### OLD
-First let's save the command to run the runner
-
+This is the root folder of the cloned repository.
 ```bash
-helm repo add gitlab https://charts.gitlab.io
-helm repo update
-helm upgrade --install agent-configuration gitlab/gitlab-agent \
-    --namespace dreambooth-experiment \
-    --create-namespace \
-    --set image.tag=v15.9.0-rc1 \
-    --set config.token=<your-agent-access-token-here> \
-    --set config.kasAddress=wss://kas.gitlab.com
+root@gpu-pod:/dreambooth-api# ls
+README.md  class  config.toml  data  docker  k8s  model  requirements.txt  scripts
+```
+Most things are executed from the scripts folder. Note the `diffusers` folder that has been cloned by the `installation.sh` script.
+```bash
+root@gpu-pod:/dreambooth-api/scripts# ls
+INSTANCE_DIR  OUTPUT_DIR  diffusers  infere.py  installation.sh  report.sh  train.sh  train_dreambooth.py
+```
+
+Inside the `model/tony/` folder we can see the model files and the checkpoints.
+```bash
+root@gpu-pod:/dreambooth-api/model/tony# ls
+checkpoint-40  checkpoint-80  feature_extractor  logs  model_index.json  safety_checker  scheduler  text_encoder  tokenizer  unet  vae
+```
+
+The content of a checkpoint folder is as follows:
+```bash
+root@gpu-pod:/dreambooth-api/model/tony/checkpoint-40# ls -la
+total 7677192
+-rw-r--r--  1 root root 7861401379 Feb 27 10:10 optimizer.bin
+-rw-r--r--  1 root root      14727 Feb 27 10:10 random_states_0.pkl
+-rw-r--r--  1 root root        563 Feb 27 10:10 scheduler.bin
+drwxr-xr-x  2 root root       4096 Feb 27 10:10 text_encoder
+drwxr-xr-x  2 root root       4096 Feb 27 10:10 unet
 ```

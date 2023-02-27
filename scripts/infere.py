@@ -49,11 +49,14 @@ infereFromModelId(final_model, pipe)
 
 # list all intermediate models saved
 listOfIntermetiateModels = [f.path for f in os.scandir('../model/' + os.environ.get('SUBJECT_NAME')) if f.is_dir()]
+print('PWD : ' + os.getcwd())
+print('Folder in target directory for intermediate models : ' + listOfIntermetiateModels)
 
 # intermediate models
 for model_name in listOfIntermetiateModels :
-    if 'checkpoint' in model_name :
         # if model_name contains "checkpoint" then it's an intermediate model infere from it
+    if 'checkpoint' in model_name :
+        print('Identified intermediate model: ' + model_name + ' infere from it...')
         # Load the pipeline with the same arguments (model, revision) that were used for training
         model_id = "runwayml/stable-diffusion-v1-5"
 
@@ -62,7 +65,7 @@ for model_name in listOfIntermetiateModels :
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
         text_encoder = CLIPTextModel.from_pretrained(model_name + "/text_encoder")
 
-        pipeline = StableDiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to("cuda")
+        pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to("cuda")
 
         infereFromModelId(model_id, pipeline)
 

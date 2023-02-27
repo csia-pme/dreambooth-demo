@@ -17,8 +17,8 @@ git clone https://github.com/huggingface/diffusers
 
 cd diffusers
 pip install -e .
-cd examples
+cd examples/dreambooth
 pip install -r requirements.txt
-cd ../../
+cd ../../../
 pip install -U -r ./diffusers/examples/dreambooth/requirements.txt
 accelerate config default
