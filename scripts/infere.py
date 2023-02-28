@@ -46,12 +46,7 @@ def infereFromModelId(model_id, pipe) :
 
         print('Image generated ' + image_name)
 
-print('Starting inference...')
-
-# final model
-final_model = '../model/' + os.environ.get('SUBJECT_NAME')
-pipe = StableDiffusionPipeline.from_pretrained(final_model, torch_dtype=torch.float16).to('cuda')
-infereFromModelId(final_model, pipe)
+print('Starting inference for intermediate models ...')
 
 # list all intermediate models saved
 listOfIntermetiateModels = [f.path for f in os.scandir('../model/' + os.environ.get('SUBJECT_NAME')) if f.is_dir()]
@@ -64,16 +59,35 @@ for model_name in listOfIntermetiateModels :
         # if model_name contains "checkpoint" then it's an intermediate model infere from it
     if 'checkpoint' in model_name :
         print('Identified intermediate model: ' + model_name + ' infere from it...')
+
+        unetFolder = model_name + '/unet';
+        textEncoderFolder = model_name + '/text_encoder';
+
+        print('Working directors is: ' + os.getcwd())
+        print('List of files in current directory: ')
+        print(os.listdir())
+        print('List of files in unet directory: ')
+        print(os.listdir(unetFolder))
+        print('List of files in text encoder directory: ')
+        print(os.listdir(textEncoderFolder))
+
         # Load the pipeline with the same arguments (model, revision) that were used for training
         model_id = "runwayml/stable-diffusion-v1-5"
 
-        unet = UNet2DConditionModel.from_pretrained(model_name + '/unet', local_files_only=True)
+        unet = UNet2DConditionModel.from_pretrained(unetFolder )
 
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
-        text_encoder = CLIPTextModel.from_pretrained(model_name + '/text_encoder', local_files_only=True)
+        text_encoder = CLIPTextModel.from_pretrained(textEncoderFolder)
 
-        pipeline = StableDiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to('cuda')
+        pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to("cuda")
 
         infereFromModelId(model_id, pipeline)
 
-print('Inference done!')
+        print('Inference done!')
+
+print('Starting inference for final models ...')
+
+# final model
+final_model = '../model/' + os.environ.get('SUBJECT_NAME')
+pipe = StableDiffusionPipeline.from_pretrained(final_model, torch_dtype=torch.float16).to('cuda')
+infereFromModelId(final_model, pipe)
