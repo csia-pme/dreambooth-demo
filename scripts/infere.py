@@ -17,14 +17,13 @@ def infereFromModelId(model_id, pipe) :
         'a photo of ' + subjectName + ' as a traditional swiss',
         'a photo of ' + subjectName + ' as a 17 century noble',
         'a photo of ' + subjectName + ' as president of the USA',
-        'a photo of ' + subjectName + ' as an elf'
-        'a photo of ' + subjectName + ' as an elf'
-        'a painting of ' + subjectName + ' in the style of Gustave Klimt'
-        'a painting of ' + subjectName + ' in the style of Vincent van Gogh'
-        'a painting of ' + subjectName + ' in the style of Leonardo da Vinci'
-        'a painting of ' + subjectName + ' in the style of Michelangelo'
-        'a painting of ' + subjectName + ' in the style of Edgar Degas'
-        'a painting of ' + subjectName + ' in the style of Salvador Dali'
+        'a photo of ' + subjectName + ' as an elf',
+        'a painting of ' + subjectName + ' in the style of Gustave Klimt',
+        'a painting of ' + subjectName + ' in the style of Vincent van Gogh',
+        'a painting of ' + subjectName + ' in the style of Leonardo da Vinci',
+        'a painting of ' + subjectName + ' in the style of Michelangelo',
+        'a painting of ' + subjectName + ' in the style of Edgar Degas',
+        'a painting of ' + subjectName + ' in the style of Salvador Dali',
         ]
     print('Model id: ' + model_id)
     if model_id:
