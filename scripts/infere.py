@@ -14,10 +14,17 @@ def infereFromModelId(model_id, pipe) :
     prompts = [
         'a photo of ' + subjectName, 
         'a photo of ' + subjectName + ' as a medieval knight',
-        'a photo of ' + subjectName + ' as a medieval swiss person',
+        'a photo of ' + subjectName + ' as a traditional swiss',
         'a photo of ' + subjectName + ' as a 17 century noble',
         'a photo of ' + subjectName + ' as president of the USA',
         'a photo of ' + subjectName + ' as an elf'
+        'a photo of ' + subjectName + ' as an elf'
+        'a painting of ' + subjectName + ' in the style of Gustave Klimt'
+        'a painting of ' + subjectName + ' in the style of Vincent van Gogh'
+        'a painting of ' + subjectName + ' in the style of Leonardo da Vinci'
+        'a painting of ' + subjectName + ' in the style of Michelangelo'
+        'a painting of ' + subjectName + ' in the style of Edgar Degas'
+        'a painting of ' + subjectName + ' in the style of Salvador Dali'
         ]
     print('Model id: ' + model_id)
     if model_id:
@@ -61,12 +68,12 @@ for model_name in listOfIntermetiateModels :
         # Load the pipeline with the same arguments (model, revision) that were used for training
         model_id = "runwayml/stable-diffusion-v1-5"
 
-        unet = UNet2DConditionModel.from_pretrained(model_name + "/unet")
+        unet = UNet2DConditionModel.from_pretrained(model_name + '/unet', local_files_only=True)
 
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
-        text_encoder = CLIPTextModel.from_pretrained(model_name + "/text_encoder")
+        text_encoder = CLIPTextModel.from_pretrained(model_name + '/text_encoder', local_files_only=True)
 
-        pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to("cuda")
+        pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to('cuda')
 
         infereFromModelId(model_id, pipeline)
 

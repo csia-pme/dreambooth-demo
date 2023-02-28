@@ -3,12 +3,12 @@
 if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
-
+#export MODEL_NAME="stabilityai/stable-diffusion-2"
 export MODEL_NAME="runwayml/stable-diffusion-v1-5"
 export INSTANCE_DIR="../data/$SUBJECT_NAME"
-mkdir -p INSTANCE_DIR
+mkdir -p $INSTANCE_DIR
 export OUTPUT_DIR="../model/$SUBJECT_NAME"
-mkdir -p OUTPUT_DIR
+mkdir -p $OUTPUT_DIR
 export CLASS_DIR="../class"
 
   accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
