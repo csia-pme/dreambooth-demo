@@ -72,7 +72,7 @@ for model_name in listOfIntermetiateModels :
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
         text_encoder = CLIPTextModel.from_pretrained(model_name + '/text_encoder', local_files_only=True)
 
-        pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to('cuda')
+        pipeline = StableDiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to('cuda')
 
         infereFromModelId(model_id, pipeline)
 
