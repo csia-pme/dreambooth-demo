@@ -4,8 +4,8 @@ if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
 
-echo "Listing the installed packages in pip :"
-python3 -m pip list
+#echo "Listing the installed packages in pip :"
+#python3 -m pip list
 
 #export MODEL_NAME="stabilityai/stable-diffusion-2"
 export MODEL_NAME="runwayml/stable-diffusion-v1-5"
@@ -32,8 +32,8 @@ accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=100 \
+  --max_train_steps=1000 \
   --train_text_encoder \
-  --checkpointing_steps=40 \
+  --checkpointing_steps=200 \
   --num_train_epochs=1 
 fi

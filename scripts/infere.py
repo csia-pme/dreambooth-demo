@@ -64,22 +64,22 @@ for model_name in listOfIntermetiateModels :
         unetFolder = model_name + '/unet';
         textEncoderFolder = model_name + '/text_encoder';
 
-        print('Working directors is: ' + os.getcwd())
-        print('List of files in current directory: ')
-        print(os.listdir())
-        print('List of files in dreambooth-api directory: ')
-        print(os.listdir('/builds/AdrienAllemand/dreambooth-api'))
-        print('List of files in dreambooth-api scripts directory: ')
-        print(os.listdir('/builds/AdrienAllemand/dreambooth-api/scripts'))
-        print('List of files in parent directory: ')
-        print(os.listdir('..'))
-        print('List of files in tony model directory : ')
-        print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony'))
-        print('List of files in tony checkpoint directory : ')
-        print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony/checkpoint-80'))
-        print('List of files in text encoder directory: ')
-        print(os.listdir(textEncoderFolder))
-
+        #print('Working directors is: ' + os.getcwd())
+        #print('List of files in current directory: ')
+        #print(os.listdir())
+        #print('List of files in dreambooth-api directory: ')
+        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api'))
+        #print('List of files in dreambooth-api scripts directory: ')
+        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api/scripts'))
+        #print('List of files in parent directory: ')
+        #print(os.listdir('..'))
+        #print('List of files in tony model directory : ')
+        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony'))
+        #print('List of files in tony checkpoint directory : ')
+        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony/checkpoint-80'))
+        #print('List of files in text encoder directory: ')
+        #print(os.listdir(textEncoderFolder))
+#
         # Load the pipeline with the same arguments (model, revision) that were used for training
         model_id = "runwayml/stable-diffusion-v1-5"
 
@@ -90,7 +90,7 @@ for model_name in listOfIntermetiateModels :
 
         pipeline = DiffusionPipeline.from_pretrained(model_id, unet=unet, text_encoder=text_encoder, dtype=torch.float16).to("cuda")
 
-        infereFromModelId(model_id, pipeline)
+        infereFromModelId(model_name, pipeline)
 
         print('Inference done!')
 
