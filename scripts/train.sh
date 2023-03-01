@@ -17,7 +17,7 @@ export CLASS_DIR="../class"
 
 echo "Launching training for $SUBJECT_NAME using $MODEL_NAME"
 
-  CUDA_VISIBLE_DEVICES=0 accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
+accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME  \
   --instance_data_dir=$INSTANCE_DIR \
   --class_data_dir=$CLASS_DIR \
