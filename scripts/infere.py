@@ -76,17 +76,13 @@ for model_name in listOfIntermetiateModels :
         print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony'))
         print('List of files in tony checkpoint directory : ')
         print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony/checkpoint-80'))
-        print('List of files in tony checkpoint directory : ')
-        print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony/checkpoint-80/unet'))
-        print('List of files in unet directory: ')
-        print(os.listdir(unetFolder))
         print('List of files in text encoder directory: ')
         print(os.listdir(textEncoderFolder))
 
         # Load the pipeline with the same arguments (model, revision) that were used for training
         model_id = "runwayml/stable-diffusion-v1-5"
 
-        unet = UNet2DConditionModel.from_pretrained(unetFolder )
+        unet = UNet2DConditionModel.from_pretrained(textEncoderFolder )
 
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
         text_encoder = CLIPTextModel.from_pretrained(textEncoderFolder)
