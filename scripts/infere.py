@@ -12,18 +12,19 @@ def infereFromModelId(model_id, pipe) :
     subjectGender = ' ' + os.environ.get('SUBJECT_GENDER', '')
 
     prompts = [
-        'a photo of ' + subjectName, 
-        'a photo of ' + subjectName + ' as a medieval knight',
-        'a photo of ' + subjectName + ' as a traditional swiss',
-        'a photo of ' + subjectName + ' as a 17 century noble',
-        'a photo of ' + subjectName + ' as president of the USA',
-        'a photo of ' + subjectName + ' as an elf',
-        'a painting of ' + subjectName + ' in the style of Gustave Klimt',
-        'a painting of ' + subjectName + ' in the style of Vincent van Gogh',
-        'a painting of ' + subjectName + ' in the style of Leonardo da Vinci',
-        'a painting of ' + subjectName + ' in the style of Michelangelo',
-        'a painting of ' + subjectName + ' in the style of Edgar Degas',
-        'a painting of ' + subjectName + ' in the style of Salvador Dali',
+        'a photo of ' + subjectName + ' person', 
+        'a photo of ' + subjectName + ' person' + ' as a medieval knight',
+        'a photo of ' + subjectName + ' person' + ' as a traditional swiss',
+        'a photo of ' + subjectName + ' person' + ' as a noble',
+        'a photo of ' + subjectName + ' person' + ' as a lord of the rings elf',
+        'a photo of ' + subjectName + ' person' + ' as a lord of the rings dwarf',
+        'a photo of ' + subjectName + ' person' + ' as a lord of the rings character',
+        'a painting of ' + subjectName + ' person' + ' in the style of Gustave Klimt',
+        'a painting of ' + subjectName + ' person' + ' in the style of Vincent van Gogh',
+        'a painting of ' + subjectName + ' person' + ' in the style of Leonardo da Vinci',
+        'a painting of ' + subjectName + ' person' + ' in the style of Michelangelo',
+        'a painting of ' + subjectName + ' person' + ' in the style of Edgar Degas',
+        'a painting of ' + subjectName + ' person' + ' in the style of Salvador Dali',
         ]
     print('Model id: ' + model_id)
     if model_id:
@@ -82,7 +83,7 @@ for model_name in listOfIntermetiateModels :
         # Load the pipeline with the same arguments (model, revision) that were used for training
         model_id = "runwayml/stable-diffusion-v1-5"
 
-        unet = UNet2DConditionModel.from_pretrained(textEncoderFolder )
+        unet = UNet2DConditionModel.from_pretrained(unetFolder )
 
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
         text_encoder = CLIPTextModel.from_pretrained(textEncoderFolder)

@@ -34,5 +34,6 @@ echo "Launching training for $SUBJECT_NAME using $MODEL_NAME"
   --num_class_images=100 \
   --max_train_steps=100 \
   --train_text_encoder \
-  --checkpointing_steps=40
+  --checkpointing_steps=40 \
+  --num_train_epochs=1 
 fi
