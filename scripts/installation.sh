@@ -3,6 +3,7 @@
 apt update
 apt install -y git
 apt install -y python3-pip
+apt install -y python3.10-venv
 pip3 install --upgrade pip
 
 # Create the virtual environment

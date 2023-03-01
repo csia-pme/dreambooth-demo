@@ -3,6 +3,10 @@
 if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
+
+echo "Listing the installed packages in pip :"
+python3 -m pip list
+
 #export MODEL_NAME="stabilityai/stable-diffusion-2"
 export MODEL_NAME="runwayml/stable-diffusion-v1-5"
 export INSTANCE_DIR="../data/$SUBJECT_NAME"
@@ -10,6 +14,8 @@ mkdir -p $INSTANCE_DIR
 export OUTPUT_DIR="../model/$SUBJECT_NAME"
 mkdir -p $OUTPUT_DIR
 export CLASS_DIR="../class"
+
+echo "Launching training for $SUBJECT_NAME using $MODEL_NAME"
 
   accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME  \
