@@ -12,10 +12,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 # Install the requirements
 
-pip install --requirement ../requirements.txt
+
 
 git clone https://github.com/huggingface/diffusers
 
+pip install --requirement ../requirements.txt
 cd diffusers
 pip install -e .
 cd examples/dreambooth
