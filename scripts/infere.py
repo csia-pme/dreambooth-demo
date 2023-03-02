@@ -13,15 +13,18 @@ def infereFromModelId(model_id, pipe) :
 
     prompts = [
         'a photo of ' + subjectName + ' person', 
-        'a photo of ' + subjectName + ' person' + ' as a medieval knight',
-        'a photo of ' + subjectName + ' person' + ' as a traditional swiss',
-        'a photo of ' + subjectName + ' person' + ' as a noble',
+        'a photo of ' + subjectName + ' person' + ' as a medieval knight in armor, holding a sword',
+        'a photo of ' + subjectName + ' person' + ' dressed in swiss traditional clothing',
+        'a photo of ' + subjectName + ' person' + ' dressed as a fancy noble',
         'a painting of ' + subjectName + ' person' + ' in the style of Gustave Klimt',
         'a painting of ' + subjectName + ' person' + ' in the style of Vincent van Gogh',
         'a painting of ' + subjectName + ' person' + ' in the style of Leonardo da Vinci',
         'a painting of ' + subjectName + ' person' + ' in the style of Michelangelo',
         'a painting of ' + subjectName + ' person' + ' in the style of Edgar Degas',
         'a painting of ' + subjectName + ' person' + ' in the style of Salvador Dali',
+        'a painting of ' + subjectName + ' person' + ' in the style of Medieval religious art',
+        'a painting of ' + subjectName + ' person' + ' in the style of romanticism',
+        'a painting of ' + subjectName + ' person' + ' in the style of impressionism',
         ]
     print('Model id: ' + model_id)
     
