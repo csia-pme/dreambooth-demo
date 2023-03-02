@@ -7,8 +7,8 @@ else
 #echo "Listing the installed packages in pip :"
 #python3 -m pip list
 
-export MODEL_NAME="stabilityai/stable-diffusion-2"
-#export MODEL_NAME="runwayml/stable-diffusion-v1-5"
+#export MODEL_NAME="stabilityai/stable-diffusion-2"
+export MODEL_NAME="runwayml/stable-diffusion-v1-5"
 export INSTANCE_DIR="../data/$SUBJECT_NAME"
 mkdir -p $INSTANCE_DIR
 export OUTPUT_DIR="../model/$SUBJECT_NAME"
@@ -25,14 +25,14 @@ accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/
   --with_prior_preservation --prior_loss_weight=1.0 \
   --instance_prompt="a photo of $SUBJECT_NAME person" \
   --class_prompt="a photo of a person" \
-  --resolution=768 \
+  --resolution=512 \
   --train_batch_size=1 \
   --gradient_accumulation_steps=1 \
   --learning_rate=1e-6 \
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=599 \
+  --max_train_steps=600 \
   --train_text_encoder \
   --checkpointing_steps=200 \
   --num_train_epochs=1 

@@ -1,6 +1,6 @@
 stages:
   - train
-  - report
+#  - report
 
 variables:
   SUBJECT_NAME: miguel  # the name of the person we want to train the model on
@@ -32,13 +32,13 @@ train-job:
     paths:
       - "./images/$SUBJECT_NAME"
   resource_group: training
-report:
-  stage: report
-  image: iterativeai/cml:0-dvc2-base1
-  needs:
-    - job: train-job
-      artifacts: true
-  variables:
-    REPO_TOKEN: $CML_PAT_TOKEN
-  script:
-    - sh ./scripts/report.sh
+#report:
+#  stage: report
+#  image: iterativeai/cml:0-dvc2-base1
+#  needs:
+#    - job: train-job
+#      artifacts: true
+#  variables:
+#    REPO_TOKEN: $CML_PAT_TOKEN
+#  script:
+#    - sh ./scripts/report.sh
