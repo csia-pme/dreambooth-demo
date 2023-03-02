@@ -32,7 +32,7 @@ accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
   --num_class_images=100 \
-  --max_train_steps=800 \
+  --max_train_steps=600 \
   --train_text_encoder \
   --checkpointing_steps=200 \
   --num_train_epochs=1 
