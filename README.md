@@ -8,7 +8,36 @@ https://huggingface.co/docs/diffusers/training/dreambooth
 https://github.com/huggingface/diffusers/tree/main/examples/dreambooth
 https://blog.paperspace.com/dreambooth-stable-diffusion-tutorial-1/
 
-## steps
+## Run the code
+
+You can get a look at the gitlab-ci.yml file to see the pipeline execution steps.
+
+You will need the full content of this repository to run the experiment
+
+Clone the repo
+
+```bash
+git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
+```
+
+Then go into the `scripts` folder and run the `installation.sh` script
+
+Wait for the installation to complete for the next step you will need the environment variable `SUBJECT_NAME`to be set to the name of your training subject. 
+
+Then run the `train.sh` script and wait for the training to complete.
+
+Lastly run the `inference.sh` script to generate images of your subject. Feel free to edit the `inference.sh` script to change the prompts. It works in a way where you have an array of subjects and an array of styles. They are simply concatenated to make the resulting prompts. 2 subjects and 2 styles will generate 4 images.
+
+The pipeline runs one last script the `report.sh` script that will generate a comment on the commit containing the generated images.
+
+
+
+```bash
+
+
+## Scriptless steps
+
+### Create the k8s pod
 
 I created a pod on the k8s cluster based on the following yaml file:
 
@@ -30,75 +59,95 @@ spec:
   ```
 
 The next steps are run on the pod. To log onto the pod use :
-This assumes you have configured your kubectl to target the right cluster.
+This assumes you have configured your kubectl to target the right cluster and it has access to GPUs.
 
 ```bash
 kubectl exec -it gpu-pod --namespace=dreambooth-experience -- /bin/bash
 ```
 
-We will need GIT and Python3 and pip3 to run the training
+### Clone the repo & update
+
+You will need the content of this repository to run the experiment. 
+
+I used the personal access token in `./secrets` folder to clone the repo you should make your own and have the possibility to save it there if you want, the folder should be gitignored.
+
+You can clone it using the following command.
+
 ```bash
 apt update
-apt install git
+apt install -y git
+git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
+````
+
+We will need GIT and Python3 and pip3 to run the training
+```bash
 apt install -y python3-pip
+apt install -y python3.10-venv
 pip3 install --upgrade pip
 ````
 
-Next steps follow the hugginface tutorial :
+Next steps are inspired from the hugginface tutorial :
 https://github.com/huggingface/diffusers/tree/main/examples/dreambooth
 that is a better version of :
 https://huggingface.co/docs/diffusers/training/dreambooth
 
+### Create a virtual environment
+
+First you need to create a virtual environment for the experiment.
+
+```bash
+# Create the virtual environment
+python3 -m venv .venv
+# Activate the virtual environment
+source .venv/bin/activate
+```
+
+### Install the diffusers library
+
+Then clone the diffusers repository to have the training scripts 
+
 ```bash
 git clone https://github.com/huggingface/diffusers
-pip install -U -r diffusers/examples/dreambooth/requirements.txt
-accelerate config default
 ```
+### Requirements
 
-The I cloned this repository to have data 
+Then install the requirements. I'm not sure about the necessity of installing all requirements.txt files so i did it just in case.
 
 ```bash
-git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
-````
-
-I used the personal access token in `./secrets` folder to clone the repo you should make your own and have the possibility to save it there if you want, the folder should be gitignored. Now I need to export config to run the training
-
-// TODO update the training comment to use `./scripts/train.sh`
-```bash
-mkdir -p /model
-mkdir -p /class
-export MODEL_NAME="CompVis/stable-diffusion-v1-4"
-export INSTANCE_DIR="/dreambooth-api/data/tony"
-export OUTPUT_DIR="/model"
-export CLASS_DIR="/class"
+pip install --requirement ../requirements.txt
+cd diffusers
+pip install -e .
+cd examples/dreambooth
+pip install -r requirements.txt
+cd ../../../
+pip install -U -r ./diffusers/examples/dreambooth/requirements.txt
 ```
-
-Finally TRAIN
+### Training
 
 ```bash
-accelerate launch /diffusers/examples/dreambooth/train_dreambooth.py \
-  --pretrained_model_name_or_path=$MODEL_NAME  \
-  --instance_data_dir=$INSTANCE_DIR \
-  --output_dir=$OUTPUT_DIR \
-  --instance_prompt="a photo of tony" \
-  --resolution=512 \
-  --train_batch_size=1 \
-  --gradient_accumulation_steps=1 \
-  --learning_rate=5e-6 \
-  --lr_scheduler="constant" \
-  --lr_warmup_steps=0 \
-  --max_train_steps=400
-```
-```bash
+if [ -z "$SUBJECT_NAME" ]; then
+  echo "SUBJECT_NAME is empty"
+else
 
-## with prior preservation
-  accelerate launch /diffusers/examples/dreambooth/train_dreambooth.py \
+#echo "Listing the installed packages in pip :"
+#python3 -m pip list
+
+#export MODEL_NAME="stabilityai/stable-diffusion-2"
+export MODEL_NAME="runwayml/stable-diffusion-v1-5"
+export INSTANCE_DIR="../data/$SUBJECT_NAME"
+mkdir -p $INSTANCE_DIR
+export OUTPUT_DIR="../model/$SUBJECT_NAME"
+mkdir -p $OUTPUT_DIR
+export CLASS_DIR="../class"
+echo "Launching training for $SUBJECT_NAME using $MODEL_NAME"
+
+accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME  \
   --instance_data_dir=$INSTANCE_DIR \
   --class_data_dir=$CLASS_DIR \
   --output_dir=$OUTPUT_DIR \
   --with_prior_preservation --prior_loss_weight=1.0 \
-  --instance_prompt="a photo of tony the person" \
+  --instance_prompt="a photo of $SUBJECT_NAME person" \
   --class_prompt="a photo of a person" \
   --resolution=512 \
   --train_batch_size=1 \
@@ -106,23 +155,29 @@ accelerate launch /diffusers/examples/dreambooth/train_dreambooth.py \
   --learning_rate=5e-6 \
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
-  --num_class_images=200 \
-  --max_train_steps=800
+  --num_class_images=100 \
+  --max_train_steps=600 \
+  --train_text_encoder \
+  --checkpointing_steps=200 \
+  --num_train_epochs=1 
+fi
 ```
 
-after a few minutes the model training is done we can do some inference 
+After 15~ minutes the model training is done we can do some inference. The following example uses the most basic inference code to generate a single image. If you want a more complexe version that generated multiple images at the same time on each checkpoint you can use the `inference.sh` script.
 
 ```python
 from diffusers import StableDiffusionPipeline
 import torch
 
-model_id = "path-to-your-trained-model"
+subjectName = os.environ.get('SUBJECT_NAME')
+# path to your trained model assuming you are in scripts folder
+model_id = '../model/' + subjectName
 pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to("cuda")
 
-prompt = "A photo of tony in a bucket"
+prompt = 'A painting of ' + subjectName + ' person in the style of Vincent Van Gogh'
 image = pipe(prompt, num_inference_steps=50, guidance_scale=7.5).images[0]
 
-image.save("tony-bucket.png")
+image.save('tony-van-gogh.png')
 ```
 
 to pull the image locally use
@@ -133,8 +188,8 @@ This prompt worked very well:
 > prompt = "A portrait of tony, beautiful, vivid colors, no default, symmetrical, centered, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, artstation, award winning, unreal engine, octane render, cinematic light, depth of field, Blender and Photoshop, dynamic dramatic cinematic lighting, very inspirational"
 
 > prompt = "A portrait of tony as a medieval knight, beautiful face, vivid colors, no default, symmetrical, centered, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, artstation, award winning, unreal engine, octane render, cinematic light, depth of field, Blender and Photoshop, dynamic dramatic cinematic lighting, very inspirational"
->
-## K8s gitlab runner
+
+## K8s gitlab runner setup
 
 We want our gitlab pipeline to execute within the kubernetes cluster. To do so we need to install a gitlab runner on the cluster.
 
@@ -242,6 +297,17 @@ train-job:
     - python ./scripts/infere.py
 
 ```
+
+### Multi-GPU checkpoint inference
+
+There is a problem with accelerate when generating heckpoints in a multi-GPU architecture. There are 2 solutions : run without checkpointing or run with a single GPU.
+
+To run with a single GPU, we need to modify the following line to the `train.sh` script :
+```bash 
+accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
+...
+```  
+Otherwise, the output of the checkpoint will be lacking the unet/ folder and it will be impossible to make images from that checkpoint.
 
 ### state observation
 
