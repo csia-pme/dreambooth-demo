@@ -5,7 +5,6 @@ import os
 
 def infereFromModelId(model_id, pipe) :
 
-
     subjectName = os.environ.get('SUBJECT_NAME')
 
     prompts = [
@@ -90,8 +89,9 @@ for model_name in listOfIntermetiateModels :
         #print(os.listdir(textEncoderFolder))
 #
         # Load the pipeline with the same arguments (model, revision) that were used for training
-        model_id = "runwayml/stable-diffusion-v1-5"
-
+        model_id = "stabilityai/stable-diffusion-2"
+        #model_id = "runwayml/stable-diffusion-v1-5"
+        
         unet = UNet2DConditionModel.from_pretrained(unetFolder )
 
         # if you have trained with `--args.train_text_encoder` make sure to also load the text encoder
