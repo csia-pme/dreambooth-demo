@@ -12,10 +12,11 @@ def infereFromModelId(model_id, pipe) :
     subjectGender = ' ' + os.environ.get('SUBJECT_GENDER', '')
 
     prompts = [
-        'a photo of ' + subjectName + ' person', 
+        'a photo of ' + subjectName, 
         'a photo of ' + subjectName + ' person' + ' as a medieval knight in armor, holding a sword',
         'a photo of ' + subjectName + ' person' + ' dressed in swiss traditional clothing',
         'a photo of ' + subjectName + ' person' + ' dressed as a fancy noble',
+        'a photo of ' + subjectName + ' person' + ' as the jocker',
         'a painting of ' + subjectName + ' person' + ' in the style of Gustave Klimt',
         'a painting of ' + subjectName + ' person' + ' in the style of Vincent van Gogh',
         'a painting of ' + subjectName + ' person' + ' in the style of Leonardo da Vinci',
@@ -25,6 +26,7 @@ def infereFromModelId(model_id, pipe) :
         'a painting of ' + subjectName + ' person' + ' in the style of Medieval religious art',
         'a painting of ' + subjectName + ' person' + ' in the style of romanticism',
         'a painting of ' + subjectName + ' person' + ' in the style of impressionism',
+        'a painting of ' + subjectName + ' person' + ' in the style of an art deco poster, framed',
         ]
     print('Model id: ' + model_id)
     
