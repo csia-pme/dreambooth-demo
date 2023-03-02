@@ -27,9 +27,10 @@ def infereFromModelId(model_id, pipe) :
         'a painting of ' + subjectName + ' person' + ' in the style of Salvador Dali',
         ]
     print('Model id: ' + model_id)
-    if model_id:
-        iteration = ''.join(filter(str.isdigit, model_id));
-    else :
+    
+    iteration = ''.join(filter(str.isdigit, model_id));
+
+    if iteration == '' :
         iteration = 'final'
         
     for prompt in prompts:
@@ -40,10 +41,13 @@ def infereFromModelId(model_id, pipe) :
         if not os.path.exists(path) :
             os.makedirs(path)
 
-        image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
-        image.save(path + '/' + iteration + '-clean.png')
-        image2 = pipe(prompt + subjectGender + realisticStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
-        image2.save(path + '/' + iteration + '-realistic.png')
+        image = pipe(prompt + subjectGender , num_inference_steps=50, guidance_scale=7.5).images[0]
+        image.save(path + '/' + iteration + '.jpg')
+        
+        #image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
+        #image.save(path + '/' + iteration + '-clean.png')
+        #image2 = pipe(prompt + subjectGender + realisticStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
+        #image2.save(path + '/' + iteration + '-realistic.png')
 
         print('Image generated ' + image_name)
 

@@ -253,7 +253,7 @@ rbac:
 
 
 ## Assign GPU to the pipeline pods
-One problem we would encounter running the pipeline "as is" is that pods are deployed on gpuless nodes. We can fix this by adding a nodeSelector to the pipeline pods.
+One problem we would encounter running the pipeline "as is" is that pods are deployed on gpuless nodes by the runner. We can fix this by adding a nodeSelector to the pipeline pods.
 
 ```yaml
 runners:
@@ -276,28 +276,6 @@ helm upgrade --install --namespace dreambooth-experience gitlab-runner -f ./valu
 
 You should now see your runner in the gitlab UI > Repository > Settings > CI/CD > Runners, correctly registered as a Project Runner.
 
-## Creating a pipeline
-
-First, let's make a gitlab ci file to run our training script. We will use the nvidia/cuda:12.0.1-runtime-ubuntu22.04 image to have access to the GPU.
-
-```yaml
-stages:
-  - train
-
-variables:
-  SUBJECT_NAME: tony  # the name of the person we want to train the model on
-
-
-train-job:
-  stage: train
-  image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
-  script:
-    - sh ./scripts/installation.sh
-    - sh ./scripts/train.sh
-    - python ./scripts/infere.py
-
-```
-
 ### Multi-GPU checkpoint inference
 
 There is a problem with accelerate when generating heckpoints in a multi-GPU architecture. There are 2 solutions : run without checkpointing or run with a single GPU.
@@ -311,7 +289,7 @@ Otherwise, the output of the checkpoint will be lacking the unet/ folder and it 
 
 ### state observation
 
-To better understant what is  where in the pod here are a few results of LS commands
+To better understand  what is  where in the pod here are a few results of LS commands
 
 This is the root folder of the cloned repository.
 ```bash
@@ -343,5 +321,5 @@ drwxr-xr-x  2 root root       4096 Feb 27 10:10 unet
 
 ### Copy image from pod to local
 ```bash
-kubectl cp dreambooth-experience/gpu-pod:/dreambooth-api/model/tony/intermediate-tony.png ./intermediate-tony.png
+cp dreambooth-experience/gpu-pod:/dreambooth-api/images/ ./images/ 
 ```
