@@ -34,6 +34,6 @@ accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/
   --num_class_images=100 \
   --max_train_steps=600 \
   --train_text_encoder \
-  --checkpointing_steps=200 \
+  --checkpointing_steps=320 \
   --num_train_epochs=1 
 fi

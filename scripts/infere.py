@@ -24,7 +24,7 @@ def infereFromModelId(model_id, pipe) :
         'painting of ' + subjectName + ' in the style of an art deco poster, framed',
         'oil painting of ' + subjectName + ' in the style of Vincent van Gogh',
         'pencil drawing of ' + subjectName + ' in the style of Leonardo da Vinci',
-        'drawing of ' + subjectName + ' in the an manga style',
+        'drawing of ' + subjectName + ' in the manga style',
         ]
     print('Model id: ' + model_id)
     
