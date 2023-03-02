@@ -9,21 +9,22 @@ def infereFromModelId(model_id, pipe) :
 
     prompts = [
         'photo of ' + subjectName, 
-        'portrait of ' + subjectName + ' person' + ' as a medieval knight in armor',
-        'photo of ' + subjectName + ' person' + ' dressed in swiss traditional clothing',
-        'photo of ' + subjectName + ' person' + ' dressed as a peaky blinder',
-        'photo of ' + subjectName + ' person' + ' as the joker from batman',
-        'painting of ' + subjectName + ' person' + ' as a the king of france',
-        'painting of ' + subjectName + ' person' + ' in the style of Gustave Klimt',
-        'painting of ' + subjectName + ' person' + ' in the style of Edgar Degas',
-        'painting of ' + subjectName + ' person' + ' in the style of Salvador Dali',
-        'painting of ' + subjectName + ' person' + ' in the style of Medieval religious art',
-        'painting of ' + subjectName + ' person' + ' in the style of romanticism',
-        'painting of ' + subjectName + ' person' + ' in the style of impressionism',
-        'painting of ' + subjectName + ' person' + ' in the style of an art deco poster, framed',
-        'oil painting of ' + subjectName + ' person' + ' in the style of Vincent van Gogh',
-        'pencil drawing of ' + subjectName + ' person' + ' in the style of Leonardo da Vinci',
-        'drawing of ' + subjectName + ' person' + ' in the an anime style',
+        'portrait of ' + subjectName + ' as a medieval knight in armor',
+        'portrait of ' + subjectName + ' as a lego character',
+        'photo of ' + subjectName + ' dressed in swiss traditional clothing',
+        'photo of ' + subjectName + ' dressed as a peaky blinder',
+        'photo of ' + subjectName + ' as the joker from batman',
+        'painting of ' + subjectName + ' as a the king of france',
+        'painting of ' + subjectName + ' in the style of Gustave Klimt',
+        'painting of ' + subjectName + ' in the style of Edgar Degas',
+        'painting of ' + subjectName + ' in the style of Salvador Dali',
+        'painting of ' + subjectName + ' in the style of Medieval religious art',
+        'painting of ' + subjectName + ' in the style of romanticism',
+        'painting of ' + subjectName + ' in the style of impressionism',
+        'painting of ' + subjectName + ' in the style of an art deco poster, framed',
+        'oil painting of ' + subjectName + ' in the style of Vincent van Gogh',
+        'pencil drawing of ' + subjectName + ' in the style of Leonardo da Vinci',
+        'drawing of ' + subjectName + ' in the an manga style',
         ]
     print('Model id: ' + model_id)
     
@@ -86,8 +87,8 @@ for model_name in listOfIntermetiateModels :
         #print(os.listdir(textEncoderFolder))
 #
         # Load the pipeline with the same arguments (model, revision) that were used for training
-        model_id = "stabilityai/stable-diffusion-2"
-        #model_id = "runwayml/stable-diffusion-v1-5"
+        #model_id = "stabilityai/stable-diffusion-2"
+        model_id = "runwayml/stable-diffusion-v1-5"
         
         unet = UNet2DConditionModel.from_pretrained(unetFolder )
 
