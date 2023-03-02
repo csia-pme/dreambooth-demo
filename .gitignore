@@ -1,8 +1,6 @@
 ## k8s
 secrets
 
-# Data used to train the models
-data
 # The models
 *.pkl
 model
