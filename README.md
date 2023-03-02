@@ -323,3 +323,8 @@ drwxr-xr-x  2 root root       4096 Feb 27 10:10 unet
 ```bash
 cp dreambooth-experience/gpu-pod:/dreambooth-api/images/ ./images/ 
 ```
+
+### Temps de run
+- 2 minutes installation de l'environment
+- 1 mintute téléchargement du model
+- 

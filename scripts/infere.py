@@ -7,21 +7,25 @@ def infereFromModelId(model_id, pipe) :
 
     #cleanStyle = ', beautiful face, symmetrical, centered, dramatic angle, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, 8k, award winning, rgb , unreal engine, octane render, cinematic light, depth of field, blur'
     #realisticStyle = 'medium closeup photo, detailed (wrinkles, blemishes!, folds!, viens, pores!!, skin imperfections:1.1), highly detailed glossy eyes, (looking at the camera), specular lighting, ultra quality, sharp focus, dof, film grain, Fujifilm XT3, crystal clear'
-    style = ', beautiful face, details, sharp focu, 8k, award winning, depth of field, smooth lighting'
+    style = 
 
     subjectName = os.environ.get('SUBJECT_NAME')
     subjectGender = ' ' + os.environ.get('SUBJECT_GENDER', '')
 
     prompts = [
-        'a photo of ' + subjectName, 
-        'a photo of ' + subjectName + ' person' + ' as a medieval knight in armor, holding a sword' + style,
-        'a photo of ' + subjectName + ' person' + ' dressed in swiss traditional clothing' + style,
-        'a photo of ' + subjectName + ' person' + ' dressed as a fancy noble' + style,
-        'a photo of ' + subjectName + ' person' + ' as the jocker' + style,
+        'a photo of ' + subjectName + ', beautiful face, highly detailed eyes, sharp focus, 8k, award winning, depth of field, smooth lighting', 
+        'a photo of ' + subjectName + ' person' + ' as a medieval knight in armor',
+        'a photo of ' + subjectName + ' person' + ' dressed in swiss traditional clothing',
+        'a photo of ' + subjectName + ' person' + ' dressed as a peaky blinder',
+        'a photo of ' + subjectName + ' person' + ' as the joker',
+        'a photo of ' + subjectName + ' person' + ' as the a marvel super hero',
+        'a photo of ' + subjectName + ' person' + ' as the a the hulk',
+        'a photo of ' + subjectName + ' person' + ' as a roman centurion',
+        'a photo of ' + subjectName + ' person' + ' as julius cesar',
+        'a photo of ' + subjectName + ' person' + ' as a french monarch',
         'a painting of ' + subjectName + ' person' + ' in the style of Gustave Klimt',
         'a painting of ' + subjectName + ' person' + ' in the style of Vincent van Gogh',
         'a painting of ' + subjectName + ' person' + ' in the style of Leonardo da Vinci',
-        'a painting of ' + subjectName + ' person' + ' in the style of Michelangelo',
         'a painting of ' + subjectName + ' person' + ' in the style of Edgar Degas',
         'a painting of ' + subjectName + ' person' + ' in the style of Salvador Dali',
         'a painting of ' + subjectName + ' person' + ' in the style of Medieval religious art',
@@ -38,13 +42,15 @@ def infereFromModelId(model_id, pipe) :
         
     for prompt in prompts:
         image_name = prompt.replace(' ', '-')
+        image_name = prompt.replace(',', '')
+        image_name = image_name.replace(' person', '')
 
 
         path = '../images/' + os.environ.get('SUBJECT_NAME') + '/' + image_name;
         if not os.path.exists(path) :
             os.makedirs(path)
 
-        image = pipe(prompt + subjectGender , num_inference_steps=50, guidance_scale=7.5).images[0]
+        image = pipe(prompt , num_inference_steps=50, guidance_scale=7.5).images[0]
         image.save(path + '/' + iteration + '.jpg')
         
         #image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
