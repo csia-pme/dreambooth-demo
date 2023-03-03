@@ -4,6 +4,7 @@ stages:
 
 variables:
   SUBJECT_NAME: loyse  # the name of the person we want to train the model on
+  SUBJECT_GENDER: woman
   # Change pip's cache directory to be inside the project directory since we can
   # only cache local items.
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"

@@ -6,6 +6,7 @@ import os
 def infereFromModelId(model_id, pipe) :
 
     subjectName = os.environ.get('SUBJECT_NAME')
+    subjectGender = os.environ.ger('SUBJECT_GENDER', '')
 
     prompts = [
         'a photo of ' + subjectName, 
@@ -44,7 +45,7 @@ def infereFromModelId(model_id, pipe) :
         if not os.path.exists(path) :
             os.makedirs(path)
 
-        image = pipe(prompt , num_inference_steps=50, guidance_scale=7.5).images[0]
+        image = pipe(prompt + ', ' + subjectGender , num_inference_steps=50, guidance_scale=7.5).images[0]
         image.save(path + '/' + iteration + '.jpg')
         
         #image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
