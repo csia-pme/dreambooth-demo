@@ -6,7 +6,7 @@ import os
 def infereFromModelId(model_id, pipe) :
 
     subjectName = os.environ.get('SUBJECT_NAME')
-    subjectGender = os.environ.ger('SUBJECT_GENDER', '')
+    subjectGender = os.environ.get('SUBJECT_GENDER', '')
 
     prompts = [
         'a photo of ' + subjectName, 
