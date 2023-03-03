@@ -9,25 +9,23 @@ def infereFromModelId(model_id, pipe) :
 
     prompts = [
         'a photo of ' + subjectName, 
-        'a photo of ' + subjectName + ' dressed in swiss traditional clothing',
         'a photo of ' + subjectName + ' dressed as a peaky blinder',
-        'a photo of ' + subjectName + ' as the joker from batman',
         'a portrait of ' + subjectName + ' as a medieval knight in armor',
-        'a portrait of ' + subjectName + ' as a lego character',
         'a painting of ' + subjectName + ' as a the king of france',
         'a painting of ' + subjectName + ' in the style of Gustave Klimt',
         'a painting of ' + subjectName + ' in the style of Edgar Degas',
         'a painting of ' + subjectName + ' in the style of Salvador Dali',
-        'a painting of ' + subjectName + ' in the style of medieval religious art',
+        'a Andy Warhol painting of ' + subjectName,
+        'a Salvador Dali painting of ' + subjectName,
+        'a medieval religious painting of ' + subjectName,
         'a painting of ' + subjectName + ' in the style of romanticism',
         'a painting of ' + subjectName + ' in the style of impressionism',
         'a painting of ' + subjectName + ' in the style of an art deco poster, framed',
-        'a painting of ' + subjectName + ' in the style of Vincent van Gogh',
-        'a pencil drawing of ' + subjectName + ' in the style of Leonardo da Vinci',
-        'a painting of ' + subjectName + ' in the style of Katsushika Hokusai',
-        'a drawing of ' + subjectName + ' in the manga style',
-        'a drawing of ' + subjectName + ' in the manga dragon ball z style',
-        'a drawing of ' + subjectName + ' in the manga naruto style',
+        'a Vincent van Gogh painting of ' + subjectName,
+        'a Leonardo da Vinci pencil drawing of ' + subjectName,
+        'a Katsushika Hokusai painting of ' + subjectName,
+        'a manga of ' + subjectName,
+        'a manga of ' + subjectName + ' in the naruto style',
         ]
     print('Model id: ' + model_id)
     
