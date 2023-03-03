@@ -7,22 +7,24 @@ def infereFromModelId(model_id, pipe) :
 
     subjectName = os.environ.get('SUBJECT_NAME')
     subjectGender = os.environ.get('SUBJECT_GENDER', '')
+    if subjectGender :
+        subjectGender = ' ' + subjectGender
 
     prompts = [
-        'a painting of ' + subjectName + ' as a medieval knight in armor',
-        'a painting of ' + subjectName + ' as a the king of france',
-        'a painting of ' + subjectName + ' in the style of Gustave Klimt',
-        'a painting of ' + subjectName + ' in the style of Edgar Degas',
-        'a painting of ' + subjectName + ' in the style of Salvador Dali',
-        'a painting of ' + subjectName + ' by Andy Warhol in the style of pop art',
-        'a painting of ' + subjectName + ' by Salvador Dali in the style of surrealism',
-        'a painting of ' + subjectName + ' in the style of mediaeval book illumination',
-        'a painting of ' + subjectName + ' in the style of romanticism',
-        'a painting of ' + subjectName + ' in the style of impressionism',
-        'a painting of ' + subjectName + ' in the style of an art deco poster, framed',
-        'a painting of ' + subjectName + ' by Vincent van Gogh',
-        'a pencil drawing of ' + subjectName + ' by Leonardo da Vinci',
-        'a painting of ' + subjectName + ' by Katsushika Hokusai',
+        'a painting of ' + subjectName + subjectGender + ' as a medieval knight in armor',
+        'a painting of ' + subjectName + subjectGender + ' as a the king of france',
+        'a painting of ' + subjectName + subjectGender + ' in the style of Gustave Klimt',
+        'a painting of ' + subjectName + subjectGender + ' in the style of Edgar Degas',
+        'a painting of ' + subjectName + subjectGender + ' in the style of Salvador Dali',
+        'a painting of ' + subjectName + subjectGender + ' by Andy Warhol in the style of pop art',
+        'a painting of ' + subjectName + subjectGender + ' by Salvador Dali in the style of surrealism',
+        'a painting of ' + subjectName + subjectGender + ' in the style of mediaeval book illumination',
+        'a painting of ' + subjectName + subjectGender + ' in the style of romanticism',
+        'a painting of ' + subjectName + subjectGender + ' in the style of impressionism',
+        'a painting of ' + subjectName + subjectGender + ' in the style of an art deco poster, framed',
+        'a painting of ' + subjectName + subjectGender + ' in the style of Vincent van Gogh',
+        'a pencil drawing of ' + subjectName + subjectGender + ' in the style Leonardo da Vinci',
+        'a painting of ' + subjectName + subjectGender + ' by Katsushika Hokusai',
         ]
     print('Model id: ' + model_id)
     
@@ -38,12 +40,10 @@ def infereFromModelId(model_id, pipe) :
 
 
         path = '../images/' + os.environ.get('SUBJECT_NAME') + '/' + image_name;
-        
+
         if not os.path.exists(path) :
             os.makedirs(path)
 
-        if subjectGender :
-            subjectGender = ', ' + subjectGender
 
         image = pipe(prompt + subjectGender , num_inference_steps=50, guidance_scale=7.5).images[0]
         image.save(path + '/' + iteration + '.jpg')
