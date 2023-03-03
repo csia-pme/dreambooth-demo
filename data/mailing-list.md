@@ -1,6 +1,4 @@
 # Mailing list
-zorro - surlaroutedesetoilesfilantes@gmail.com
-agthe
 
 taoufiq.abbassi.y@gmail.com
 
