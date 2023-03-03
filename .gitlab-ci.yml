@@ -3,7 +3,7 @@ stages:
 #  - report
 
 variables:
-  SUBJECT_NAME: narutosks  # the name of the person we want to train the model on
+  SUBJECT_NAME: sks  # the name of the person we want to train the model on
   SUBJECT_GENDER: boy
   # Change pip's cache directory to be inside the project directory since we can
   # only cache local items.
