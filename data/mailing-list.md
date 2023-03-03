@@ -1,2 +1,3 @@
 # Mailing list
-benoist.wolleb@la-cave.ch - benoist
+zorro - surlaroutedesetoilesfilantes@gmail.com
+agthe
