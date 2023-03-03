@@ -7,11 +7,11 @@ def infereFromModelId(model_id, pipe) :
 
     subjectName = os.environ.get('SUBJECT_NAME')
     subjectGender = os.environ.get('SUBJECT_GENDER', '')
-    if subjectGender :
+    if subjectGender != '' :
         subjectGender = ' ' + subjectGender
 
     prompts = [
-        'a painting of ' + subjectName + subjectGender + ' as a medieval knight in armor',
+        'a photo of ' + subjectName + subjectGender + ' as a medieval knight in armor',
         'a painting of ' + subjectName + subjectGender + ' as a the king of france',
         'a painting of ' + subjectName + subjectGender + ' in the style of Gustave Klimt',
         'a painting of ' + subjectName + subjectGender + ' in the style of Edgar Degas',
@@ -37,6 +37,7 @@ def infereFromModelId(model_id, pipe) :
         image_name = prompt.replace(' ', '-')
         image_name = prompt.replace(',', '')
         image_name = image_name.replace(' person', '')
+        image_name = image_name.replace(' woman', '')
 
 
         path = '../images/' + os.environ.get('SUBJECT_NAME') + '/' + image_name;
@@ -45,7 +46,7 @@ def infereFromModelId(model_id, pipe) :
             os.makedirs(path)
 
 
-        image = pipe(prompt + subjectGender , num_inference_steps=50, guidance_scale=7.5).images[0]
+        image = pipe(prompt , num_inference_steps=50, guidance_scale=7.5).images[0]
         image.save(path + '/' + iteration + '.jpg')
         
         #image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
