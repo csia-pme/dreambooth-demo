@@ -7,7 +7,7 @@ train:
   steps: 600
   checkpoint: 210
   #Learning rate
-  rate: 0.000002
+  ate: 0.000002
   
 infere:
   steps: 50
