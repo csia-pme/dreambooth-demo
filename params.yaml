@@ -1,0 +1,12 @@
+prepare:
+  size: 512
+
+train:
+  size: 512
+  steps: 600
+  checkpoint: 210
+  learning-rate: 0.000002
+  
+infere:
+  steps: 50
+  guidance: 7.5

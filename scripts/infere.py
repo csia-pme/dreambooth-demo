@@ -3,6 +3,8 @@ from transformers import CLIPTextModel
 import torch
 import os
 
+params = yaml.safe_load(open("params.yaml"))["prepare"]
+
 def infereFromModelId(model_id, pipe) :
 
     subjectName = os.environ.get('SUBJECT_NAME')
@@ -22,8 +24,8 @@ def infereFromModelId(model_id, pipe) :
         'a painting of ' + subjectName + subjectGender + ' in the style of romanticism',
         'a painting of ' + subjectName + subjectGender + ' in the style of an art deco poster, framed',
         'a painting of ' + subjectName + subjectGender + ' in the style of Vincent van Gogh',
-        'a pencil drawing of ' + subjectName + subjectGender + ' in the style Leonardo da Vinci',
         'a painting of ' + subjectName + subjectGender + ' by Katsushika Hokusai',
+        'a pencil drawing of ' + subjectName + subjectGender + ' in the style Leonardo da Vinci',
         ]
     print('Model id: ' + model_id)
     
@@ -33,8 +35,9 @@ def infereFromModelId(model_id, pipe) :
         iteration = 'final'
         
     for prompt in prompts:
+        #remove generic keywords image name
         image_name = prompt.replace(' ', '-')
-        image_name = prompt.replace(',', '')
+        image_name = image_name.replace(',', '')
         image_name = image_name.replace(' person', '')
         image_name = image_name.replace(' woman', '')
 
@@ -45,14 +48,9 @@ def infereFromModelId(model_id, pipe) :
             os.makedirs(path)
 
 
-        image = pipe(prompt , num_inference_steps=50, guidance_scale=7.5).images[0]
+        image = pipe(prompt , num_inference_steps=params[steps], guidance_scale=params[guidance]).images[0]
         image.save(path + '/' + iteration + '.jpg')
         
-        #image = pipe(prompt + subjectGender + cleanStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
-        #image.save(path + '/' + iteration + '-clean.png')
-        #image2 = pipe(prompt + subjectGender + realisticStyle , num_inference_steps=50, guidance_scale=7.5).images[0]
-        #image2.save(path + '/' + iteration + '-realistic.png')
-
         print('Image generated ' + image_name)
 
 print('Starting inference for intermediate models ...')
@@ -71,22 +69,6 @@ for model_name in listOfIntermetiateModels :
 
         unetFolder = model_name + '/unet';
         textEncoderFolder = model_name + '/text_encoder';
-
-        #print('Working directors is: ' + os.getcwd())
-        #print('List of files in current directory: ')
-        #print(os.listdir())
-        #print('List of files in dreambooth-api directory: ')
-        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api'))
-        #print('List of files in dreambooth-api scripts directory: ')
-        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api/scripts'))
-        #print('List of files in parent directory: ')
-        #print(os.listdir('..'))
-        #print('List of files in tony model directory : ')
-        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony'))
-        #print('List of files in tony checkpoint directory : ')
-        #print(os.listdir('/builds/AdrienAllemand/dreambooth-api/model/tony/checkpoint-80'))
-        #print('List of files in text encoder directory: ')
-        #print(os.listdir(textEncoderFolder))
 #
         # Load the pipeline with the same arguments (model, revision) that were used for training
         #model_id = "stabilityai/stable-diffusion-2"

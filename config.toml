@@ -1,4 +1,0 @@
-[[runners]]
-    [runners.kubernetes.node_selector]
-        "nvidia.com/gpu.present": true
-  

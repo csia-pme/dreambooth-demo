@@ -1,15 +1,16 @@
-import os, sys
-
+import os
+import sys
+import yaml
 from PIL import Image
 
+params = yaml.safe_load(open("params.yaml"))["prepare"]
 
 def crop_image(imagePath):
     image = Image.open(imagePath)
     width, height = image.size
     image = crop_center(image, min(width,height), min(width,height))
-    image = image.resize((512,512))
+    image = image.resize((params['size'],params['size']))
     image.save(imagePath)
-
 
 def crop_center(pil_img, crop_width, crop_height):
     img_width, img_height = pil_img.size
@@ -17,7 +18,6 @@ def crop_center(pil_img, crop_width, crop_height):
                          (img_height - crop_height) // 2,
                          (img_width + crop_width) // 2,
                          (img_height + crop_height) // 2))
-
 
 subjectName = sys.argv[1]
 
