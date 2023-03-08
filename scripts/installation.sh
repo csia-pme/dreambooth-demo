@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 apt update
 apt install -y git
@@ -15,7 +15,7 @@ yq --version
 # Create the virtual environment
 python3 -m venv .venv
 # Activate the virtual environment
-source .venv/bin/activate
+. .venv/bin/activate
 # Install the requirements
 
 git clone https://github.com/huggingface/diffusers

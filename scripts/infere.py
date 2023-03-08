@@ -2,6 +2,7 @@ from diffusers import StableDiffusionPipeline, DiffusionPipeline, UNet2DConditio
 from transformers import CLIPTextModel
 import torch
 import os
+import yaml
 
 params = yaml.safe_load(open("../params.yaml"))["infere"]
 
