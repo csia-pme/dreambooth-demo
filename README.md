@@ -392,7 +392,12 @@ This stage will take images in the `data/images` folder and prepare them for tra
 
 ```bash 
 # Add the prepare stage to the dvc pipeline
-dvc stage add -n prepare -p prepare.size -d scripts/prepare.py -d data/images -o data/prepared python3 scripts/prepare.py
+dvc stage add -n prepare \
+  -p prepare.size \
+  -d scripts/prepare.py \
+  -d data/images \
+  -o data/prepared \
+  python3 scripts/prepare.py
 ```
 
 ### Add train stage
