@@ -8,8 +8,11 @@ apt install -y wget
 pip3 install --upgrade pip
 
 # This is the tool used to read yaml files from bash
-wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-chmod a+x /usr/local/bin/yq
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
+add-apt-repository ppa:rmescandon/yq
+apt update
+apt install yq -y
+yq --version
 
 # Create the virtual environment
 python3 -m venv .venv

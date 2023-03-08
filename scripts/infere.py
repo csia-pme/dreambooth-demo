@@ -8,24 +8,24 @@ params = yaml.safe_load(open("params.yaml"))["prepare"]
 def infereFromModelId(model_id, pipe) :
 
     subjectName = os.environ.get('SUBJECT_NAME')
-    subjectGender = os.environ.get('SUBJECT_GENDER', '')
-    if subjectGender != '' :
-        subjectGender = ' ' + subjectGender
+    subjectExtra = os.environ.get('SUBJECT_EXTRA', '')
+    if subjectExtra != '' :
+        subjectExtra = ' ' + subjectExtra
 
     prompts = [
-        'a photo of ' + subjectName + subjectGender + ' as a medieval knight in armor',
-        'a painting of ' + subjectName + subjectGender + ' as a the king of france',
-        'a painting of ' + subjectName + subjectGender + ' in the style of Gustave Klimt',
-        'a painting of ' + subjectName + subjectGender + ' in the style of Edgar Degas',
-        'a painting of ' + subjectName + subjectGender + ' in the style of Salvador Dali',
-        'a painting of ' + subjectName + subjectGender + ' by Andy Warhol',
-        'a painting of ' + subjectName + subjectGender + ' by Salvador Dali',
-        'a painting of ' + subjectName + subjectGender + ' in the style of mediaeval book illumination',
-        'a painting of ' + subjectName + subjectGender + ' in the style of romanticism',
-        'a painting of ' + subjectName + subjectGender + ' in the style of an art deco poster, framed',
-        'a painting of ' + subjectName + subjectGender + ' in the style of Vincent van Gogh',
-        'a painting of ' + subjectName + subjectGender + ' by Katsushika Hokusai',
-        'a pencil drawing of ' + subjectName + subjectGender + ' in the style Leonardo da Vinci',
+        'a photo of ' + subjectName + subjectExtra + ' as a medieval knight in armor',
+        'a painting of ' + subjectName + subjectExtra + ' as a the king of france',
+        'a painting of ' + subjectName + subjectExtra + ' in the style of Gustave Klimt',
+        'a painting of ' + subjectName + subjectExtra + ' in the style of Edgar Degas',
+        'a painting of ' + subjectName + subjectExtra + ' in the style of Salvador Dali',
+        'a painting of ' + subjectName + subjectExtra + ' by Andy Warhol',
+        'a painting of ' + subjectName + subjectExtra + ' by Salvador Dali',
+        'a painting of ' + subjectName + subjectExtra + ' in the style of mediaeval book illumination',
+        'a painting of ' + subjectName + subjectExtra + ' in the style of romanticism',
+        'a painting of ' + subjectName + subjectExtra + ' in the style of an art deco poster, framed',
+        'a painting of ' + subjectName + subjectExtra + ' in the style of Vincent van Gogh',
+        'a painting of ' + subjectName + subjectExtra + ' by Katsushika Hokusai',
+        'a pencil drawing of ' + subjectName + subjectExtra + ' in the style Leonardo da Vinci',
         ]
     print('Model id: ' + model_id)
     
