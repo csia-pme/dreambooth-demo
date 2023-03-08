@@ -1,4 +1,4 @@
 [core]
-    remote = data
-['remote "data"']
-    url = gs://dreambooth-experience-bucker/dvcstore
+    remote = data/images
+['remote "data/images"']
+    url = gs://dreambooth-experience-bucker/

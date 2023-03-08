@@ -327,4 +327,9 @@ cp dreambooth-experience/gpu-pod:/dreambooth-api/images/ ./images/
 ### Temps de run
 - 2 minutes installation de l'environment
 - 1 mintute téléchargement du model
-- 
+
+
+gcloud storage buckets create gs://dreambooth-experience-bucker \
+    --location=EUROPE-WEST6 \
+    --uniform-bucket-level-access \
+    --public-access-prevention
