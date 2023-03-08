@@ -3,7 +3,7 @@ from transformers import CLIPTextModel
 import torch
 import os
 
-params = yaml.safe_load(open("../params.yaml"))["prepare"]
+params = yaml.safe_load(open("../params.yaml"))["infere"]
 
 def infereFromModelId(model_id, pipe) :
 
@@ -48,7 +48,7 @@ def infereFromModelId(model_id, pipe) :
             os.makedirs(path)
 
 
-        image = pipe(prompt , num_inference_steps=params[steps], guidance_scale=params[guidance]).images[0]
+        image = pipe(prompt , num_inference_steps=params['steps'], guidance_scale=params['guidance']).images[0]
         image.save(path + '/' + iteration + '.jpg')
         
         print('Image generated ' + image_name)
