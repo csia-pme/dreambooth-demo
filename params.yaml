@@ -1,3 +1,4 @@
+# DO NOT USE - in names yq doesn't like it at all use single words and comment if needed
 prepare:
   size: 512
 
@@ -5,7 +6,8 @@ train:
   size: 512
   steps: 600
   checkpoint: 210
-  learning-rate: 0.000002
+  #Learning rate
+  rate: 0.000002
   
 infere:
   steps: 50
