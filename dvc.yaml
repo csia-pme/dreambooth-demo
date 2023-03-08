@@ -8,3 +8,17 @@ stages:
     - prepare.size
     outs:
     - data/prepared
+  train:
+    cmd: sh scripts/train.py
+    deps:
+    - data/prepared
+    - scripts/train.py
+    params:
+    - train.class_prompt
+    - train.image_size
+    - train.instance_prompt
+    - train.learning_rate
+    - train.model_name
+    - train.steps
+    outs:
+    - model

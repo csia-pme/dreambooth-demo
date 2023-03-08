@@ -3,11 +3,12 @@ prepare:
   size: 512
 
 train:
-  size: 512
+  'model_name': 'runwayml/stable-diffusion-v1-5'
+  'instance_prompt': 'a photo of sks person'
+  'class_prompt': 'a photo of a person'
+  'image_size': 512
+  'learning_rate': 0.000002
   steps: 600
-  checkpoint: 210
-  #Learning rate
-  rate: 0.000002
   
 infere:
   steps: 50

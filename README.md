@@ -329,7 +329,87 @@ cp dreambooth-experience/gpu-pod:/dreambooth-api/images/ ./images/
 - 1 mintute téléchargement du model
 
 
-gcloud storage buckets create gs://dreambooth-experience-bucker \
-    --location=EUROPE-WEST6 \
-    --uniform-bucket-level-access \
-    --public-access-prevention
+
+## Using DVC to reproduce the experiment
+
+### install cloud sdk
+
+```bash
+# This is for hte linux x86_64 architecture see https://cloud.google.com/sdk/docs/install-sdk#linux for other architectures
+curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-421.0.0-linux-x86_64.tar.gz
+# Extract the SDK
+tar -xf google-cloud-cli-421.0.0-linux-x86_64.tar.gz
+
+# install the sdk. it will prompt you to setup the PATH variable so the next command can be run
+./google-cloud-sdk/install.sh
+
+# Initialize and login to Google Cloud
+gcloud init
+
+# List all available projects
+gcloud projects list
+
+# Select your Google Cloud project
+gcloud config set project <id of your gcp project>
+
+# Set authentication for our ML experiment
+# https://dvc.org/doc/command-reference/remote/add#google-cloud-storage
+# https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
+gcloud auth application-default login
+```
+
+### Create a bucket and add it to DVC
+
+```bash
+# Create a bucket for the experiment
+gcloud storage buckets create gs://dreambooth-experience-bucket \
+  --location=EUROPE-WEST6 \
+  --uniform-bucket-level-access \
+  --public-access-prevention
+
+# Initialize DVC in the working directory
+dvc init
+
+# Add the Google Storage remote bucket
+dvc remote add -d data gs://<my bucket name>/dvcstore
+```
+
+### Add preparation stage
+
+This stage will take images in the `data/images` folder and prepare them for training. It will crop them to the size specified in the `prepare.size` parameter (in pixel). The output of this stage will be in the `data/prepared` folder.
+
+- Stage name : 
+  - prepare
+- Parameters : 
+  - prepare.size
+- Dependencies : 
+  - scripts/prepare.py
+  - data/images
+- Outputs : 
+  - data/prepared
+- CMD to run : 
+  - python3 scripts/prepare.py
+
+```bash 
+# Add the prepare stage to the dvc pipeline
+dvc stage add -n prepare -p prepare.size -d scripts/prepare.py -d data/images -o data/prepared python3 scripts/prepare.py
+```
+
+### Add train stage
+
+This stage will take the prepared images and train the model. The output of this stage will be in the `model/` folder.
+
+```bash
+# Add the train stage to the dvc pipeline
+dvc stage add -n train \
+  -p train.model_name \
+  -p train.instance_prompt \
+  -p train.class_prompt \
+  -p train.image_size \
+  -p train.learning_rate \
+  -p train.steps \
+  -d scripts/train.py \
+  -d data/prepared \
+  -o model \
+  sh scripts/train.py
+```
