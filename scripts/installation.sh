@@ -4,6 +4,7 @@ apt update
 apt install -y git
 apt install -y python3-pip
 apt install -y python3.10-venv
+apt install -y wget
 pip3 install --upgrade pip
 
 # This is the tool used to read yaml files from bash
