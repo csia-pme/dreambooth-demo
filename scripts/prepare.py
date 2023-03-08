@@ -3,7 +3,7 @@ import sys
 import yaml
 from PIL import Image
 
-params = yaml.safe_load(open("params.yaml"))["prepare"]
+params = yaml.safe_load(open("../params.yaml"))["prepare"]
 
 def crop_image(imagePath):
     image = Image.open(imagePath)

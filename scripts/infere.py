@@ -3,7 +3,7 @@ from transformers import CLIPTextModel
 import torch
 import os
 
-params = yaml.safe_load(open("params.yaml"))["prepare"]
+params = yaml.safe_load(open("../params.yaml"))["prepare"]
 
 def infereFromModelId(model_id, pipe) :
 
