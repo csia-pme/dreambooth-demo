@@ -1,4 +1,4 @@
-#!/bin/bash
+#!bin/bash
 
 if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"

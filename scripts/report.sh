@@ -1,4 +1,4 @@
-#!/bin/bash
+#!bin/bash
 
 echo "ls ./images/$SUBJECT_NAME"
 ls "./images/$SUBJECT_NAME"
