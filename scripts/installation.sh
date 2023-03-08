@@ -7,8 +7,9 @@ apt install -y python3.10-venv
 pip3 install --upgrade pip
 
 # This is the tool used to read yaml files from bash
-apt install jq
-pip3 install yq
+apt install -y jq
+jq --version
+pip install yq
 yq --version
 
 # Create the virtual environment
