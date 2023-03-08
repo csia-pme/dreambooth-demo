@@ -1,0 +1,10 @@
+stages:
+  prepare:
+    cmd: python3 scripts/prepare.py
+    deps:
+    - data/images
+    - scripts/prepare.py
+    params:
+    - prepare.size
+    outs:
+    - data/prepared
