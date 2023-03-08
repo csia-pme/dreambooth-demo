@@ -4,10 +4,10 @@ if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
 
-  IMAGE_SIZE = $(yq '.train.size' ../params.yaml)
-  TRAIN_STEPS = $(yq '.train.steps' ../params.yaml)
-  CHECKPOINT_STEPS = $(yq '.train.checkpoint' ../params.yaml)
-  LEARNING_RATE = $(yq '.train.learning-rate' ../params.yaml)
+  IMAGE_SIZE=$(yq '.train.size' ../params.yaml)
+  TRAIN_STEPS=$(yq '.train.steps' ../params.yaml)
+  CHECKPOINT_STEPS=$(yq '.train.checkpoint' ../params.yaml)
+  LEARNING_RATE=$(yq '.train.learning-rate' ../params.yaml)
 
   #export MODEL_NAME="stabilityai/stable-diffusion-2"
   export MODEL_NAME="runwayml/stable-diffusion-v1-5"
