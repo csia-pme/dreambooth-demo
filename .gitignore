@@ -13,3 +13,4 @@ model
 __pycache__/
 
 diffusers
+/data
