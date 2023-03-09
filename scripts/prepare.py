@@ -5,6 +5,7 @@ from PIL import Image
 params = yaml.safe_load(open("params.yaml"))["prepare"]
 
 def crop_image(imagePath, imageName, outputPath):
+    print ('Image path :' + imagePath + imageName)
     image = Image.open(imagePath + imageName)
     width, height = image.size
     image = crop_center(image, min(width,height), min(width,height))
@@ -20,9 +21,7 @@ def crop_center(pil_img, crop_width, crop_height):
 
 folder_dir = 'data/images'
 
-print(os.getcwd())
 for image in os.listdir(folder_dir):
     # check if the image ends with jpg
     if (image.endswith(".jpeg") or image.endswith(".jpg")):
-        print(image)
         crop_image(folder_dir + '/', image, 'data/prepared/')
