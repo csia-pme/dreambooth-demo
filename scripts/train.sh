@@ -4,7 +4,7 @@ if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
 
-  MODEL_NAME=$(yq --unwrapScalar=false '.train.model_name' ../params.yaml)
+  MODEL_NAME=$(yq '.train.model_name' ../params.yaml)
 
   INSTANCE_DIR="../data/prepared"
   OUTPUT_DIR="../models"
