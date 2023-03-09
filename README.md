@@ -33,8 +33,6 @@ The pipeline runs one last script the `report.sh` script that will generate a co
 
 
 ```bash
-
-
 ## Scriptless steps
 
 ### Create the k8s pod
@@ -278,7 +276,7 @@ You should now see your runner in the gitlab UI > Repository > Settings > CI/CD 
 
 ### Multi-GPU checkpoint inference
 
-There is a problem with accelerate when generating heckpoints in a multi-GPU architecture. There are 2 solutions : run without checkpointing or run with a single GPU.
+There is a problem with accelerate when generating checkpoints in a multi-GPU architecture. There are 2 solutions : run without checkpointing or run with a single GPU.
 
 To run with a single GPU, we need to modify the following line to the `train.sh` script :
 ```bash 
