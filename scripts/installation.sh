@@ -7,9 +7,9 @@ apt install -y python3.10-venv
 pip3 install --upgrade pip
 
 # Create the virtual environment
-python3 -m venv .venv
+# python3 -m venv .venv
 # Activate the virtual environment
-. .venv/bin/activate
+# . .venv/bin/activate
 # Install the requirements
 
 # This is the tool used to read yaml files from bash
