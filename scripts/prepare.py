@@ -20,7 +20,7 @@ def crop_center(pil_img, crop_width, crop_height):
 
 folder_dir = 'data/images'
 for image in os.listdir(folder_dir):
-
+    print(image)
     # check if the image ends with jpg
     if (image.endswith(".jpeg") or image.endswith(".jpg")):
         crop_image(folder_dir + '/', image, 'data/prepared/')
