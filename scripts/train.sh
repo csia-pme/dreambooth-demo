@@ -24,7 +24,7 @@ else
   echo "Train steps $TRAIN_STEPS"
 
   accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
-    --pretrained_model_name_or_path=$MODEL_NAME  \
+    --pretrained_model_name_or_path="runwayml/stable-diffusion-v1-5"  \
     --instance_data_dir=$INSTANCE_DIR \
     --class_data_dir="../class" \
     --output_dir=$OUTPUT_DIR \
