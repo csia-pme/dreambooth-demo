@@ -24,21 +24,21 @@ else
   echo "Train steps $TRAIN_STEPS"
 
   accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
-    --pretrained_model_name_or_path=$MODEL_NAME \
-    --instance_data_dir=$INSTANCE_DIR \
+    --pretrained_model_name_or_path="runwayml/stable-diffusion-v1-5" \
+    --instance_data_dir="../data/prepared" \
     --class_data_dir="../class" \
-    --output_dir=$OUTPUT_DIR \
+    --output_dir="../models" \
     --with_prior_preservation --prior_loss_weight=1.0 \
     --instance_prompt="a photo of sks person" \
     --class_prompt="a photo of a person" \
-    --resolution=$IMAGE_SIZE \
+    --resolution=512 \
     --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
-    --learning_rate=$LEARNING_RATE \
+    --learning_rate=0.000002 \
     --lr_scheduler="constant" \
     --lr_warmup_steps=0 \
     --num_class_images=100 \
-    --max_train_steps=$TRAIN_STEPS \
+    --max_train_steps=600 \
     --train_text_encoder \
     --num_train_epochs=1 
 fi
