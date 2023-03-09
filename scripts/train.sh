@@ -4,18 +4,18 @@ if [ -z "$SUBJECT_NAME" ]; then
   echo "SUBJECT_NAME is empty"
 else
 
-  MODEL_NAME=$(yq '.train.model_name' ../params.yaml)
+  MODEL_NAME=$(yq -r '.train.model_name' ../params.yaml)
 
   INSTANCE_DIR="../data/prepared"
   OUTPUT_DIR="../models"
   mkdir -p $INSTANCE_DIR
   mkdir -p $OUTPUT_DIR
 
-  INSTANCE_PROMPT=$(yq '.train.instance_prompt' ../params.yaml)
-  CLASS_PROMPT=$(yq '.train.class_prompt' ../params.yaml)
-  IMAGE_SIZE=$(yq '.train.image_size' ../params.yaml)
-  LEARNING_RATE=$(yq '.train.learning_rate' ../params.yaml)
-  TRAIN_STEPS=$(yq '.train.steps' ../params.yaml)
+  INSTANCE_PROMPT=$(yq -r '.train.instance_prompt' ../params.yaml)
+  CLASS_PROMPT=$(yq -r '.train.class_prompt' ../params.yaml)
+  IMAGE_SIZE=$(yq -r '.train.image_size' ../params.yaml)
+  LEARNING_RATE=$(yq -r '.train.learning_rate' ../params.yaml)
+  TRAIN_STEPS=$(yq -r '.train.steps' ../params.yaml)
 
 
   echo "Launching training using $MODEL_NAME"
