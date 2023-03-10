@@ -21,4 +21,4 @@ stages:
     - train.model_name
     - train.steps
     outs:
-    - model
+    - models
