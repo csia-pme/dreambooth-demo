@@ -9,10 +9,10 @@ stages:
     outs:
     - data/prepared
   train:
-    cmd: sh scripts/train.py
+    cmd: sh scripts/train.sh
     deps:
     - data/prepared
-    - scripts/train.py
+    - scripts/train.sh
     params:
     - train.class_prompt
     - train.image_size
