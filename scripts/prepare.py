@@ -1,6 +1,7 @@
 import os
 import yaml
 from PIL import Image
+from pathlib import Path
 
 params = yaml.safe_load(open("params.yaml"))["prepare"]
 
@@ -10,7 +11,8 @@ def crop_image(imagePath, imageName, outputPath):
     width, height = image.size
     image = crop_center(image, min(width,height), min(width,height))
     image = image.resize((params['size'],params['size']))
-    image.save(outputPath + imageName)
+    path = Path(outputPath + imageName)
+    image.save(path)
 
 def crop_center(pil_img, crop_width, crop_height):
     img_width, img_height = pil_img.size
