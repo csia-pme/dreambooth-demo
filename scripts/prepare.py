@@ -6,7 +6,11 @@ from pathlib import Path
 params = yaml.safe_load(open("params.yaml"))["prepare"]
 
 def crop_image(imagePath, imageName, outputPath):
-    print ('Image path :' + imagePath + imageName)
+
+    # create the output directory if it does not exist
+    if not os.path.exists(outputPath):
+        os.makedirs(outputPath)
+
     image = Image.open(imagePath + imageName)
     width, height = image.size
     image = crop_center(image, min(width,height), min(width,height))
@@ -22,6 +26,7 @@ def crop_center(pil_img, crop_width, crop_height):
                          (img_height + crop_height) // 2))
 
 folder_dir = './data/images'
+
 
 for image in os.listdir(folder_dir):
     # check if the image ends with jpg
