@@ -17,7 +17,7 @@ def make_image_grid(imgs, rows, cols):
 params = yaml.safe_load(open("./params.yaml"))["infere"]
 
 #  model path
-model_path = './model'
+model_path = './models'
 output_path = './images'
 
 if not os.path.exists(output_path) :
