@@ -1,4 +1,0 @@
-[core]
-    remote = data/images
-['remote "data/images"']
-    url = gs://dreambooth-experience-bucker/
