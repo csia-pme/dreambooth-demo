@@ -20,10 +20,10 @@ params = yaml.safe_load(open("./params.yaml"))["infere"]
 model_path = './model'
 output_path = './images'
 
-if not os.path.exists(path) :
-    os.makedirs(path)
+if not os.path.exists(output_path) :
+    os.makedirs(output_path)
 
-pipe = StableDiffusionPipeline.from_pretrained(final_model, torch_dtype=torch.float16).to('cuda')
+pipe = StableDiffusionPipeline.from_pretrained(model_path, torch_dtype=torch.float16).to('cuda')
 
 prompt = params['prompt']
 
