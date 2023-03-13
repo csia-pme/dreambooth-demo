@@ -25,9 +25,9 @@ if not os.path.exists(output_path) :
 
 pipe = StableDiffusionPipeline.from_pretrained(model_path, torch_dtype=torch.float16).to('cuda')
 
-prompt = params['prompt']
+prompts = [params['prompt']] * params['number_images']
 
-images = pipe(prompt , num_inference_steps=params['steps'], guidance_scale=params['guidance'])
+images = pipe(prompts , num_inference_steps=params['steps'], guidance_scale=params['guidance'])
 
 image_grid = make_image_grid(images, 1, params['number_images'])
    
