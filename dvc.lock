@@ -1,0 +1,20 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python3 scripts/prepare.py
+    deps:
+    - path: data/images
+      md5: a90c3805120e8a6ed84e9c2a066c6837.dir
+      size: 96500
+      nfiles: 13
+    - path: scripts/prepare.py
+      md5: 45e377dadab2abbae05f7ac0a577cbf1
+      size: 1123
+    params:
+      params.yaml:
+        prepare.size: 512
+    outs:
+    - path: data/prepared
+      md5: 3b63b2dd898f23032c82062ed57b6d96.dir
+      size: 91656
+      nfiles: 6

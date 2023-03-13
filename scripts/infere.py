@@ -5,7 +5,7 @@ import os
 import yaml
 
 def make_image_grid(imgs, rows, cols):
-    assert len(imgs) == rows*cols
+    assert len(imgs) >= rows*cols
 
     w, h = imgs[0].size
     grid = Image.new('RGB', size=(cols*w, rows*h))
