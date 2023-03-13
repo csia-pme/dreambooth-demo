@@ -319,7 +319,7 @@ drwxr-xr-x  2 root root       4096 Feb 27 10:10 unet
 
 ### Copy image from pod to local
 ```bash
-cp dreambooth-experience/gpu-pod:/dreambooth-api/images/ ./images/ 
+kubectl cp dreambooth-experience/gpu-pod:/dreambooth-api/images/ ./images/ 
 ```
 
 ### Temps de run
