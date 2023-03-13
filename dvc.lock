@@ -28,6 +28,7 @@ stages:
     - path: scripts/train.sh
       md5: 8085bd728e745f45734268b08544ef92
       size: 1377
+      isexec: true
     params:
       params.yaml:
         train.class_prompt: a photo of a person
@@ -39,14 +40,14 @@ stages:
         train.steps: 600
     outs:
     - path: models
-      md5: c390c7b76258433fba577ca1f1af307e.dir
+      md5: 0adcd21fb35c160d7cc6a5b8592059c1.dir
       size: 17275215639
       nfiles: 25
   infere:
     cmd: python3 scripts/infere.py
     deps:
     - path: models
-      md5: c390c7b76258433fba577ca1f1af307e.dir
+      md5: 0adcd21fb35c160d7cc6a5b8592059c1.dir
       size: 17275215639
       nfiles: 25
     - path: scripts/infere.py
@@ -57,10 +58,11 @@ stages:
         infere.guidance: 7.5
         infere.infere_seed: 42424242
         infere.number_images: 4
-        infere.prompt: a photo of sks person
+        infere.prompt: a photo of sks person, on a caribbean island, high definition,
+          detailed, beautiful, glossy eyes, facing camera
         infere.steps: 50
     outs:
     - path: images
-      md5: 1cbfb62a258420b0d5049ecf6bfff050.dir
-      size: 103018
+      md5: 75fe1f09797f6e9786643f80d39af08a.dir
+      size: 133032
       nfiles: 1
