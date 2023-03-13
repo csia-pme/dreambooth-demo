@@ -416,3 +416,15 @@ dvc stage add -n train \
   -o model \
   sh scripts/train.py
 ```
+
+# config s3 for minio
+add to file `.dvc/config`
+```
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = s3://dreambooth-bucket
+    endpointurl = https://minio-aii.iict.ch
+    access_key_id = minio
+    secret_access_key = <your password>
+```
