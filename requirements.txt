@@ -1,4 +1,4 @@
-dvc[gs]==2.37.0
+dvc[s3]==2.37.0
 pytorch-fid==0.3.0
 accelerate
 torchvision
