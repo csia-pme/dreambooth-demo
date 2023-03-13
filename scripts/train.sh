@@ -26,8 +26,8 @@ accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
   --class_data_dir="../class" \
   --output_dir=$OUTPUT_DIR \
   --with_prior_preservation --prior_loss_weight=1.0 \
-  --instance_prompt=$INSTANCE_PROMPT \
-  --class_prompt=$CLASS_PROMPT \
+  --instance_prompt="$INSTANCE_PROMPT" \
+  --class_prompt="$CLASS_PROMPT" \
   --resolution=$IMAGE_SIZE \
   --train_batch_size=1 \
   --gradient_accumulation_steps=1 \
