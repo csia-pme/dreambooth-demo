@@ -16,3 +16,4 @@ infere:
   prompt: 'a photo of sks person'
   steps: 50
   guidance: 7.5
+  'infere_seed': 42424242
