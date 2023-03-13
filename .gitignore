@@ -12,3 +12,5 @@ model
 __pycache__/
 
 diffusers
+/images
+/models

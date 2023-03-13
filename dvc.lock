@@ -18,3 +18,49 @@ stages:
       md5: 3b63b2dd898f23032c82062ed57b6d96.dir
       size: 91656
       nfiles: 6
+  train:
+    cmd: sh scripts/train.sh
+    deps:
+    - path: data/prepared
+      md5: 3b63b2dd898f23032c82062ed57b6d96.dir
+      size: 91656
+      nfiles: 6
+    - path: scripts/train.sh
+      md5: 8085bd728e745f45734268b08544ef92
+      size: 1377
+    params:
+      params.yaml:
+        train.class_prompt: a photo of a person
+        train.image_size: 512
+        train.instance_prompt: a photo of sks person
+        train.learning_rate: 2e-06
+        train.model_name: runwayml/stable-diffusion-v1-5
+        train.seed: 42424242
+        train.steps: 600
+    outs:
+    - path: models
+      md5: c390c7b76258433fba577ca1f1af307e.dir
+      size: 17275215639
+      nfiles: 25
+  infere:
+    cmd: python3 scripts/infere.py
+    deps:
+    - path: models
+      md5: c390c7b76258433fba577ca1f1af307e.dir
+      size: 17275215639
+      nfiles: 25
+    - path: scripts/infere.py
+      md5: 38204d4e76d1cc524bd1a3b117856d95
+      size: 1023
+    params:
+      params.yaml:
+        infere.guidance: 7.5
+        infere.infere_seed: 42424242
+        infere.number_images: 4
+        infere.prompt: a photo of sks person
+        infere.steps: 50
+    outs:
+    - path: images
+      md5: 1cbfb62a258420b0d5049ecf6bfff050.dir
+      size: 103018
+      nfiles: 1
