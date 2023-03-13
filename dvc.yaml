@@ -30,5 +30,9 @@ stages:
     - scripts/infere.py
     params:
     - infere.prompt
+    - infere.guidance
+    - infere.infere_seed
+    - infere.number_images
+    - infere.steps
     outs:
     - images

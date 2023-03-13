@@ -23,7 +23,7 @@ output_path = './images'
 if not os.path.exists(output_path) :
     os.makedirs(output_path)
 
-generator = torch.Generator("cuda").manual_seed(params['infere'])
+generator = torch.Generator("cuda").manual_seed(params['infere_seed'])
 pipe = StableDiffusionPipeline.from_pretrained(model_path, torch_dtype=torch.float16)
 
 prompts = [params['prompt']] * params['number_images']
