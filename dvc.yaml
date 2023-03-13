@@ -24,10 +24,10 @@ stages:
     outs:
     - models
   infere:
-    cmd: sh scripts/infere.sh
+    cmd: python3 scripts/infere.py
     deps:
     - models
-    - scripts/infere.sh
+    - scripts/infere.py
     params:
     - infere.prompt
     outs:
