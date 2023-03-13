@@ -9,7 +9,10 @@ train:
   'image_size': 512
   'learning_rate': 0.000002
   steps: 600
+  seed: 42424242
   
 infere:
+  'number_images': 4
+  prompt: 'a photo of sks person'
   steps: 50
   guidance: 7.5

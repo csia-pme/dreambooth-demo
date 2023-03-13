@@ -12,6 +12,7 @@ CLASS_PROMPT=$(yq -r '.train.class_prompt' params.yaml)
 IMAGE_SIZE=$(yq -r '.train.image_size' params.yaml)
 LEARNING_RATE=$(yq -r '.train.learning_rate' params.yaml)
 TRAIN_STEPS=$(yq -r '.train.steps' params.yaml)
+SEED=$(yq -r '.train.seed' params.yaml)
 
 
 echo "Launching training using $MODEL_NAME"
@@ -36,4 +37,5 @@ accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/
   --num_class_images=100 \
   --max_train_steps=$TRAIN_STEPS \
   --train_text_encoder \
-  --num_train_epochs=1 
+  --num_train_epochs=1 \
+  --seed=$SEED

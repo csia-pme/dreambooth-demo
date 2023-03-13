@@ -20,5 +20,15 @@ stages:
     - train.learning_rate
     - train.model_name
     - train.steps
+    - train.seed
     outs:
     - models
+  infere:
+    cmd: sh scripts/infere.sh
+    deps:
+    - models
+    - scripts/infere.sh
+    params:
+    - infere.prompt
+    outs:
+    - images
