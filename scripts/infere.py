@@ -14,7 +14,7 @@ def make_image_grid(imgs, rows, cols):
         grid.paste(img, box=(i%cols*w, i//cols*h))
     return grid
 
-params = yaml.safe_load(open("../params.yaml"))["infere"]
+params = yaml.safe_load(open("./params.yaml"))["infere"]
 
 #  model path
 model_path = './model'
