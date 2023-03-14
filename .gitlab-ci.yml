@@ -1,6 +1,6 @@
 stages:
   - train
-#  - report
+  - report
 
 variables:
   SUBJECT_NAME: tony  # the name of the person we want to train the model on
@@ -15,31 +15,30 @@ variables:
 cache:
   paths:
     - .cache/pip
+    - models
+    - data
 
 train-job:
   stage: train
   image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
   script:
     - nvidia-smi
-    - cd ./scripts
-    - chmod +x ./installation.sh
-    - sh ./installation.sh
-    - chmod +x ./train.sh
-    - sh ./train.sh
-    - mkdir -p "../images/$SUBJECT_NAME"
-    - python3 ./infere.py
+    - sh ./scripts/installation.sh
+    - dvc remote modify myremote access_key_id $MINIO_KEY_ID
+    - dvc remote modify myremote secret_access_key $MINIO_ACCESS_KEY
+    - dvc repro
   artifacts:
     expire_in: 1 week
     paths:
-      - "./images/$SUBJECT_NAME"
+      - "./images"
   resource_group: training
-#report:
-#  stage: report
-#  image: iterativeai/cml:0-dvc2-base1
-#  needs:
-#    - job: train-job
-#      artifacts: true
-#  variables:
-#    REPO_TOKEN: $CML_PAT_TOKEN
-#  script:
-#    - sh ./scripts/report.sh
+report:
+  stage: report
+  image: iterativeai/cml:0-dvc2-base1
+  needs:
+    - job: train-job
+      artifacts: true
+  variables:
+    REPO_TOKEN: $CML_PAT_TOKEN
+  script:
+    - sh ./scripts/report.sh

@@ -1,6 +1,5 @@
 ## k8s
 secrets
-/.dvc/config
 
 # The models
 *.pkl

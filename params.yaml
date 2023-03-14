@@ -13,7 +13,7 @@ train:
   
 infere:
   'number_images': 4
-  prompt: 'a photo of sks person, on a caribbean island, high definition, detailed, beautiful, glossy eyes, facing camera'
+  prompt: 'a vacation photo of sks person, on a caribbean island, high definition, detailed, beautiful, glossy eyes, facing camera'
   steps: 50
   guidance: 7.5
   'infere_seed': 42424242
