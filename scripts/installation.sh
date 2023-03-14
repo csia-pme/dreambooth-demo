@@ -5,6 +5,7 @@ apt install -y git
 apt install -y python3-pip
 apt install -y python3.10-venv
 pip3 install --upgrade pip
+pip3 install -r requirements.txt
 
 # Create the virtual environment
 # python3 -m venv .venv
@@ -20,11 +21,8 @@ yq --version
 
 git clone https://github.com/huggingface/diffusers
 
-pip install --requirement ../requirements.txt
-cd diffusers
-pip install -e .
-cd examples/dreambooth
 pip install -r requirements.txt
-cd ../../../
-pip install -U -r ./diffusers/examples/dreambooth/requirements.txt
+pip install -e ./diffusers
+pip install -r ./diffusers/examples/dreambooth/requirements.txt
+
 accelerate config default
