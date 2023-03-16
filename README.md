@@ -249,6 +249,7 @@ rbac:
 #[...]
 ```
 
+# Kubernetes runner configuration
 
 ## Assign GPU to the pipeline pods
 One problem we would encounter running the pipeline "as is" is that pods are deployed on gpuless nodes by the runner. We can fix this by adding a nodeSelector to the pipeline pods.
@@ -417,8 +418,8 @@ dvc stage add -n train \
   sh scripts/train.py
 ```
 
-# config s3 for minio
-add to file `.dvc/config`
+# config s3 for minio (local) for dvc
+add to file `.dvc/config` to have it run locally.
 ```
 [core]
     remote = myremote
@@ -426,5 +427,11 @@ add to file `.dvc/config`
     url = s3://dreambooth-bucket
     endpointurl = https://minio-aii.iict.ch
     access_key_id = minio
-    secret_access_key = <your password>
+```
+
+To avoid having the password stored locally we will use the `dvc remote modify` command to set the password.
+You can use the following command to set the password in the terminal without it being stored in the history.
+```bash
+read -sp 'S3 Access key : ' SECRET_ACCESS_KEY
+dvc remote modify myremote secret_access_key $SECRET_ACCESS_KEY
 ```

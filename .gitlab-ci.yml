@@ -35,7 +35,6 @@ train-job:
     expire_in: 1 week
     paths:
       - "./images"
-  resource_group: training
 report:
   stage: report
   image: iterativeai/cml:0-dvc2-base1
