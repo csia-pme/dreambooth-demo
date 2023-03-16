@@ -1,4 +1,3 @@
-# DO NOT USE - in names yq doesn't like it at all use single words and comment if needed
 prepare:
   size: 512
 
