@@ -4,8 +4,10 @@ MODEL_NAME=$(yq -r '.train.model_name' params.yaml)
 
 INSTANCE_DIR="data/prepared"
 OUTPUT_DIR="models"
+CLASS_DIR="class"
 mkdir -p $INSTANCE_DIR
 mkdir -p $OUTPUT_DIR
+mkdir -p $CLASS_DIR
 
 INSTANCE_PROMPT=$(yq -r '.train.instance_prompt' params.yaml)
 CLASS_PROMPT=$(yq -r '.train.class_prompt' params.yaml)
@@ -23,7 +25,7 @@ echo "Train steps $TRAIN_STEPS"
 accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME \
   --instance_data_dir=$INSTANCE_DIR \
-  --class_data_dir="../class" \
+  --class_data_dir=$CLASS_DIR \
   --output_dir=$OUTPUT_DIR \
   --with_prior_preservation --prior_loss_weight=1.0 \
   --instance_prompt="$INSTANCE_PROMPT" \

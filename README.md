@@ -8,6 +8,27 @@ https://huggingface.co/docs/diffusers/training/dreambooth
 https://github.com/huggingface/diffusers/tree/main/examples/dreambooth
 https://blog.paperspace.com/dreambooth-stable-diffusion-tutorial-1/
 
+## Experiment
+
+This experiment is based on the dreambooth project. The goal is to train a model to generate images of a given subject. The model is trained on a dataset of images of the subject and a dataset of images of people in general. The model is then used to generate images of the subject.
+
+<div class="center">
+<h3><center> Experiment diagram</center> </h3>
+
+```mermaid
+graph TD
+A[Take subject images] --> B[Fine tune the model using dreambooth]
+A2[Stable diffusion 1.5] --> B
+B --> C[Use the new model to create images of the subject]
+```
+</div>
+
+## MLOps
+
+The experiment is MLOpsified using DVC and CML.
+
+
+
 ## Run the code
 
 You can get a look at the gitlab-ci.yml file to see the pipeline execution steps.
