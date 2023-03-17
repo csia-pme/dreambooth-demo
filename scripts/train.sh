@@ -39,5 +39,4 @@ accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
   --num_class_images=100 \
   --max_train_steps=$TRAIN_STEPS \
   --train_text_encoder \
-  --num_train_epochs=1 \
   --seed=$SEED
