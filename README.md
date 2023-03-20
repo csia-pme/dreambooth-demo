@@ -17,7 +17,7 @@ This experiment is based on the dreambooth project. The goal is to train a model
 
 ```mermaid
 graph TD
-A[Take subject images] --> B[Fine tune the model using dreambooth]
+A[Subject images] --> B[Fine tune the model using dreambooth]
 A2[Stable diffusion 1.5] --> B
 B --> C[Use the new model to create images of the subject]
 ```
@@ -27,38 +27,43 @@ B --> C[Use the new model to create images of the subject]
 
 The experiment is MLOpsified using DVC and CML.
 
+## Run the code "localy"
 
+As this experiment requires a lot of VRAM we recomment you run it on a GPU enabled machine with more than 24Go of VRAM. We used 2x Nvidia A40 GPUs with 48 Go of VRAM but you can probably get away with less if you edit the training script to use less VRAM. (see https://github.com/huggingface/diffusers/tree/main/examples/dreambooth for more details on possible configurations of the training script)
 
-## Run the code
+>You can get a look at the gitlab-ci.yml file to see the pipeline execution steps.
 
-You can get a look at the gitlab-ci.yml file to see the pipeline execution steps.
+>You will need the full content of this repository to run the experiment
 
-You will need the full content of this repository to run the experiment
+<div class="center">
+<h3><center> Full run of the experiment</center> </h3>
 
-Clone the repo
-
-```bash
-git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
+```mermaid
+graph TD
+C[Clone the rep\n <i>git clone</i>]
+C --> C2[pull the data\n <i>dvc pull</i>] 
+C2 --> D[Install the requirements\n <i>scripts/installation.sh</i>]
+D --> E[Prepare the data \n <i>scripts/prepare.sh</i>]
+E --> F[Train the model\n <i>scripts/train.sh</i>]
+F --> G[Infere images \n <i>scripts/inference.sh</i>]
+G -- if in CI --> H[Report the results \n <i>scripts/report.sh</i>]
 ```
+</div>
 
-Then go into the `scripts` folder and run the `installation.sh` script
+### Connect to the environment
+Depending on your context, you will need to connect to the environment you will use to run this experiment. 
 
-Wait for the installation to complete for the next step you will need the environment variable `SUBJECT_NAME`to be set to the name of your training subject. 
+If you want to run the experiment on a kubernetes pod in your cluster you can do the following :
 
-Then run the `train.sh` script and wait for the training to complete.
-
-Lastly run the `inference.sh` script to generate images of your subject. Feel free to edit the `inference.sh` script to change the prompts. It works in a way where you have an array of subjects and an array of styles. They are simply concatenated to make the resulting prompts. 2 subjects and 2 styles will generate 4 images.
-
-The pipeline runs one last script the `report.sh` script that will generate a comment on the commit containing the generated images.
-
-
-
-```bash
-## Scriptless steps
-
-### Create the k8s pod
+#### Create the k8s pod
 
 I created a pod on the k8s cluster based on the following yaml file:
+
+> You will need to have a kubernetes cluster with GPUs available to run this experiment.
+
+> For our experiment we run the pod in a namespace called `dreambooth-experience`.
+
+> You will need to have kubectl configured to target the right cluster or use the web interface rancher to create the pod : https://rancher.iict.ch
 
 ```yaml
 apiVersion: v1
@@ -75,138 +80,81 @@ spec:
     command: ["/bin/bash"]
     args: ["-c", "while true; do echo 'Running GPU pod...'; sleep 30; done"]
   restartPolicy: Never
-  ```
+```
 
-The next steps are run on the pod. To log onto the pod use :
-This assumes you have configured your kubectl to target the right cluster and it has access to GPUs.
+#### Log onto the pod
+
+> This assumes you have configured your kubectl to target the right cluster pod and it has access to GPUs.
 
 ```bash
 kubectl exec -it gpu-pod --namespace=dreambooth-experience -- /bin/bash
 ```
 
-### Clone the repo & update
+Congratulation, you have a shell on a GPU enabled machine.
 
-You will need the content of this repository to run the experiment. 
+### Clone the repo
 
-I used the personal access token in `./secrets` folder to clone the repo you should make your own and have the possibility to save it there if you want, the folder should be gitignored.
+> You need to have git installed
+> 
+> `apt install -y git`
 
-You can clone it using the following command.
+> You need to have a personal access token to clone the repo. You should make your own and have the possibility to save it in a file in the `./secrets` folder if you want for further use, the folder should be gitignored at all time.
 
 ```bash
-apt update
-apt install -y git
 git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
-````
+```
+Most of the following steps are run from the root of the repo.
 
-We will need GIT and Python3 and pip3 to run the training
+### Requirement installation
+The `installation.sh` script will install all the requirements to run the experiment in a debian based environment.
+
+If you want to install the requirements manually, you can do the following :
+
+#### Clone the diffusers repo
+> You need to have git installed
+
 ```bash
-apt install -y python3-pip
-apt install -y python3.10-venv
-pip3 install --upgrade pip
+git clone https://github.com/huggingface/diffusers
 ````
 
-Next steps are inspired from the hugginface tutorial :
-https://github.com/huggingface/diffusers/tree/main/examples/dreambooth
-that is a better version of :
-https://huggingface.co/docs/diffusers/training/dreambooth
+The diffusers are used to train the model. We will use the dreambooth example to fine tune the model.
 
-### Create a virtual environment
+#### Python requirements
 
-First you need to create a virtual environment for the experiment.
+> You need to have python3 in version 3.10 and pip3 installed
 
 ```bash
 # Create the virtual environment
 python3 -m venv .venv
 # Activate the virtual environment
-source .venv/bin/activate
+. .venv/bin/activate
+# Install our requirements
+pip3 install --upgrade pip
+pip3 install -r requirements.txt
+# Install the diffusers requirements
+pip install -e ./diffusers
+pip install -r ./diffusers/examples/dreambooth/requirements.txt
 ```
 
-### Install the diffusers library
-
-Then clone the diffusers repository to have the training scripts 
+#### JQ and YQ
+To give access to the parameters in `params.yaml` to our `sh` scripts, we use jq and yq. This is used to minimize changes to the experiment code while allowing tweaking of the parameters.
 
 ```bash
-git clone https://github.com/huggingface/diffusers
+apt install -y jq
+jq --version
+pip install yq
+yq --version
 ```
-### Requirements
+### Pull the data
 
-Then install the requirements. I'm not sure about the necessity of installing all requirements.txt files so i did it just in case.
+When you installed the dependencies from our `requirement.txt` file you should have installed dvc. DVC is used to manage the data used in the experiment.
 
-```bash
-pip install --requirement ../requirements.txt
-cd diffusers
-pip install -e .
-cd examples/dreambooth
-pip install -r requirements.txt
-cd ../../../
-pip install -U -r ./diffusers/examples/dreambooth/requirements.txt
-```
-### Training
 
-```bash
-if [ -z "$SUBJECT_NAME" ]; then
-  echo "SUBJECT_NAME is empty"
-else
 
-#echo "Listing the installed packages in pip :"
-#python3 -m pip list
-
-#export MODEL_NAME="stabilityai/stable-diffusion-2"
-export MODEL_NAME="runwayml/stable-diffusion-v1-5"
-export INSTANCE_DIR="../data/$SUBJECT_NAME"
-mkdir -p $INSTANCE_DIR
-export OUTPUT_DIR="../model/$SUBJECT_NAME"
-mkdir -p $OUTPUT_DIR
-export CLASS_DIR="../class"
-echo "Launching training for $SUBJECT_NAME using $MODEL_NAME"
-
-accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
-  --pretrained_model_name_or_path=$MODEL_NAME  \
-  --instance_data_dir=$INSTANCE_DIR \
-  --class_data_dir=$CLASS_DIR \
-  --output_dir=$OUTPUT_DIR \
-  --with_prior_preservation --prior_loss_weight=1.0 \
-  --instance_prompt="a photo of $SUBJECT_NAME person" \
-  --class_prompt="a photo of a person" \
-  --resolution=512 \
-  --train_batch_size=1 \
-  --gradient_accumulation_steps=1 \
-  --learning_rate=5e-6 \
-  --lr_scheduler="constant" \
-  --lr_warmup_steps=0 \
-  --num_class_images=100 \
-  --max_train_steps=600 \
-  --train_text_encoder \
-  --checkpointing_steps=200 \
-  --num_train_epochs=1 
-fi
-```
-
-After 15~ minutes the model training is done we can do some inference. The following example uses the most basic inference code to generate a single image. If you want a more complexe version that generated multiple images at the same time on each checkpoint you can use the `inference.sh` script.
-
-```python
-from diffusers import StableDiffusionPipeline
-import torch
-
-subjectName = os.environ.get('SUBJECT_NAME')
-# path to your trained model assuming you are in scripts folder
-model_id = '../model/' + subjectName
-pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16).to("cuda")
-
-prompt = 'A painting of ' + subjectName + ' person in the style of Vincent Van Gogh'
-image = pipe(prompt, num_inference_steps=50, guidance_scale=7.5).images[0]
-
-image.save('tony-van-gogh.png')
-```
-
-to pull the image locally use
-
-### prompt tests
-
-This prompt worked very well:
-> prompt = "A portrait of tony, beautiful, vivid colors, no default, symmetrical, centered, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, artstation, award winning, unreal engine, octane render, cinematic light, depth of field, Blender and Photoshop, dynamic dramatic cinematic lighting, very inspirational"
-
-> prompt = "A portrait of tony as a medieval knight, beautiful face, vivid colors, no default, symmetrical, centered, ornate, details, smooth, sharp focus, illustration, realistic, cinematic, artstation, award winning, unreal engine, octane render, cinematic light, depth of field, Blender and Photoshop, dynamic dramatic cinematic lighting, very inspirational"
+Next steps are inspired from the hugginface tutorial :
+https://github.com/huggingface/diffusers/tree/main/examples/dreambooth
+that is a better version of :
+https://huggingface.co/docs/diffusers/training/dreambooth
 
 ## K8s gitlab runner setup
 

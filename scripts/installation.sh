@@ -7,12 +7,6 @@ apt install -y python3.10-venv
 pip3 install --upgrade pip
 pip3 install -r requirements.txt
 
-# Create the virtual environment
-# python3 -m venv .venv
-# Activate the virtual environment
-# . .venv/bin/activate
-# Install the requirements
-
 # This is the tool used to read yaml files from bash
 apt install -y jq
 jq --version
@@ -21,7 +15,6 @@ yq --version
 
 git clone https://github.com/huggingface/diffusers
 
-pip install -r requirements.txt
 pip install -e ./diffusers
 pip install -r ./diffusers/examples/dreambooth/requirements.txt
 

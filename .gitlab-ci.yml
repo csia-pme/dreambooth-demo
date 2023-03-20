@@ -3,8 +3,6 @@ stages:
   - report
 
 variables:
-  SUBJECT_NAME: tony  # the name of the person we want to train the model on
-  SUBJECT_EXTRA: man
   # Change pip's cache directory to be inside the project directory since we can
   # only cache local items.
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -15,8 +13,6 @@ variables:
 cache:
   paths:
     - .cache/pip
-    - models
-    - data
 
 train-job:
   stage: train
