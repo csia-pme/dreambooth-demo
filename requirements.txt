@@ -1,8 +1,8 @@
 dvc[s3]==2.37.0
 pytorch-fid==0.3.0
-accelerate
-torchvision
-transformers>=4.25.1
-ftfy
-tensorboard
-Jinja2
+accelerate==0.16.0
+torchvision==0.14.1
+transformers==4.25.1
+ftfy==6.1.1
+tensorboard==2.12.0
+Jinja2==3.1.2
