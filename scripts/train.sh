@@ -22,34 +22,22 @@ echo "Image size $IMAGE_SIZE"
 echo "Learning rate $LEARNING_RATE"
 echo "Train steps $TRAIN_STEPS"
 # accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
-CUDA_LAUNCH_BLOCKING=1 accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
-  --pretrained_model_name_or_path=$MODEL_NAME  \
+accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
+  --pretrained_model_name_or_path=$MODEL_NAME \
   --instance_data_dir=$INSTANCE_DIR \
+  --class_data_dir=$CLASS_DIR \
   --output_dir=$OUTPUT_DIR \
-  --instance_prompt="a photo of sks person" \
-  --resolution=512 \
+  --with_prior_preservation --prior_loss_weight=1.0 \
+  --instance_prompt="$INSTANCE_PROMPT" \
+  --class_prompt="$CLASS_PROMPT" \
+  --resolution=$IMAGE_SIZE \
   --train_batch_size=1 \
   --gradient_accumulation_steps=1 \
-  --learning_rate=5e-6 \
+  --learning_rate=$LEARNING_RATE \
   --lr_scheduler="constant" \
   --lr_warmup_steps=0 \
-  --max_train_steps=400
-
-#  --pretrained_model_name_or_path=$MODEL_NAME \
-#  --instance_data_dir=$INSTANCE_DIR \
-#  --class_data_dir=$CLASS_DIR \
-#  --output_dir=$OUTPUT_DIR \
-#  --with_prior_preservation --prior_loss_weight=1.0 \
-#  --instance_prompt="$INSTANCE_PROMPT" \
-#  --class_prompt="$CLASS_PROMPT" \
-#  --resolution=$IMAGE_SIZE \
-#  --train_batch_size=1 \
-#  --gradient_accumulation_steps=1 \
-#  --learning_rate=$LEARNING_RATE \
-#  --lr_scheduler="constant" \
-#  --lr_warmup_steps=0 \
-#  --num_class_images=100 \
-#  --max_train_steps=$TRAIN_STEPS \
-#  --train_text_encoder \
-#  --seed=$SEED \
-#  --xformers
+  --num_class_images=100 \
+  --max_train_steps=$TRAIN_STEPS \
+  --train_text_encoder \
+  --seed=$SEED \
+  --xformers
