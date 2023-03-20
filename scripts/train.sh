@@ -22,7 +22,7 @@ echo "Image size $IMAGE_SIZE"
 echo "Learning rate $LEARNING_RATE"
 echo "Train steps $TRAIN_STEPS"
 # accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/train_dreambooth.py \
-accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
+CUDA_LAUNCH_BLOCKING=1 accelerate launch ./diffusers/examples/dreambooth/train_dreambooth.py \
   --pretrained_model_name_or_path=$MODEL_NAME  \
   --instance_data_dir=$INSTANCE_DIR \
   --output_dir=$OUTPUT_DIR \
