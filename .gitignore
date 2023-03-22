@@ -14,3 +14,5 @@ __pycache__/
 diffusers
 /images
 /models
+
+.dvc/config

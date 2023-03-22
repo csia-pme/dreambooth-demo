@@ -14,6 +14,7 @@ This experiment is based on the dreambooth project. The goal is to train a model
 
 <div class="center">
 <h3><center> Experiment diagram</center> </h3>
+<center>
 
 ```mermaid
 graph TD
@@ -21,6 +22,7 @@ A[Subject images] --> B[Fine tune the model using dreambooth]
 A2[Stable diffusion 1.5] --> B
 B --> C[Use the new model to create images of the subject]
 ```
+</center> 
 </div>
 
 ## MLOps
@@ -36,18 +38,27 @@ As this experiment requires a lot of VRAM we recomment you run it on a GPU enabl
 >You will need the full content of this repository to run the experiment
 
 <div class="center">
-<h3><center> Full run of the experiment</center> </h3>
+<h3>
+  <center> 
+    Full run of the experiment
+  </center> 
+</h3>
+<center>
 
 ```mermaid
 graph TD
-C[Clone the rep\n <i>git clone</i>]
-C --> C2[pull the data\n <i>dvc pull</i>] 
-C2 --> D[Install the requirements\n <i>scripts/installation.sh</i>]
-D --> E[Prepare the data \n <i>scripts/prepare.sh</i>]
+B[Clone the rep\n <i>git clone</i>]
+B --> C[Install the requirements\n <i>scripts/installation.sh</i>]
+C --> D[pull the data\n <i>dvc pull</i>] 
+D -- manual --> E[Prepare the data \n <i>scripts/prepare.sh</i>]
 E --> F[Train the model\n <i>scripts/train.sh</i>]
 F --> G[Infere images \n <i>scripts/inference.sh</i>]
 G -- if in CI --> H[Report the results \n <i>scripts/report.sh</i>]
+D -- with dvc --> I[Reproduce the experiment \n <i>dvc repro</i>]
+I -- if in CI ---> H
 ```
+
+  </center> 
 </div>
 
 ### Connect to the environment
@@ -57,13 +68,15 @@ If you want to run the experiment on a kubernetes pod in your cluster you can do
 
 #### Create the k8s pod
 
-I created a pod on the k8s cluster based on the following yaml file:
-
 > You will need to have a kubernetes cluster with GPUs available to run this experiment.
+
+> You will need to have kubectl configured to target the right cluster or use the web interface rancher to create the pod : https://rancher.iict.ch
 
 > For our experiment we run the pod in a namespace called `dreambooth-experience`.
 
-> You will need to have kubectl configured to target the right cluster or use the web interface rancher to create the pod : https://rancher.iict.ch
+You can either use the command line version or go throught (rancher)[https://rancher.iict.ch/dashboard/] web interface to create the pod. Our rancher is only available when connect to the VPN, being connected to the Wifi of the school is not enough.
+
+I created a pod on the k8s cluster based on the following yaml file:
 
 ```yaml
 apiVersion: v1
@@ -82,21 +95,54 @@ spec:
   restartPolicy: Never
 ```
 
+Note that we use the container image `nvidia/cuda:12.0.1-runtime-ubuntu22.04` to have a pre-configured environment with CUDA.
+
 #### Log onto the pod
 
 > This assumes you have configured your kubectl to target the right cluster pod and it has access to GPUs.
+
+> Our pod is named `gpu-pod` and is in the `dreambooth-experience` namespace.
 
 ```bash
 kubectl exec -it gpu-pod --namespace=dreambooth-experience -- /bin/bash
 ```
 
-Congratulation, you have a shell on a GPU enabled machine.
+Congratulation, you now have a shell on a GPU enabled machine in our K8s cluster. If you want to be sure you have access to the GPU  from the pod you created you can run the following command :
 
-### Clone the repo
+```bash
+nvidia-smi
+```
 
-> You need to have git installed
-> 
-> `apt install -y git`
+You should see something like this :
+```bash
+root@gpu-pod:/# nvidia-smi
+Wed Mar 22 07:48:09 2023       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 525.60.13    Driver Version: 525.60.13    CUDA Version: 12.0     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  NVIDIA A40          On   | 00000000:CA:00.0 Off |                    0 |
+|  0%   32C    P8    29W / 300W |      0MiB / 46068MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
+```
+
+
+
+### Clone the experiment repository
+
+> You need to have git installed: `apt install -y git`
 
 > You need to have a personal access token to clone the repo. You should make your own and have the possibility to save it in a file in the `./secrets` folder if you want for further use, the folder should be gitignored at all time.
 
@@ -106,7 +152,7 @@ git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
 Most of the following steps are run from the root of the repo.
 
 ### Requirement installation
-The `installation.sh` script will install all the requirements to run the experiment in a debian based environment.
+The `installation.sh` script will install all the requirements to run the experiment in a debian based environment such as the k8s pod we created earlier.
 
 If you want to install the requirements manually, you can do the following :
 
@@ -137,7 +183,7 @@ pip install -r ./diffusers/examples/dreambooth/requirements.txt
 ```
 
 #### JQ and YQ
-To give access to the parameters in `params.yaml` to our `sh` scripts, we use jq and yq. This is used to minimize changes to the experiment code while allowing tweaking of the parameters.
+To give access to the parameters in `params.yaml` to our `sh` scripts, we use `yq` over `jq`. This is used to centralize changes to the parameters in one file without needing to modify the experiment code.
 
 ```bash
 apt install -y jq
@@ -145,16 +191,64 @@ jq --version
 pip install yq
 yq --version
 ```
+
+Parameters can be found in `params.yaml` in the root of the repo.
+
 ### Pull the data
 
 When you installed the dependencies from our `requirement.txt` file you should have installed dvc. DVC is used to manage the data used in the experiment.
 
+The first step to pull the data is to configure dvc to use our S3 bucket as a remote storage.
+DVC uses S3 to store the data. For each data tracked and stored by DVC on S3, a medata file is created in the `.dvc` folder. This metadata file contains the hash of the data and the path to the data on S3. The metadata file is used to check if the data has changed and if it needs to be updated.
+
+> Git is in charge of tracking the metadata files so don't forget to commit the metadata files but not the data itself.
+
+The S3 we use for our experience is a self-hosted minio service. To configure dvc to use it, we need to create a `~/.dvc/config` file with the following content :
+
+```
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = s3://dreambooth-bucket
+    endpointurl = https://minio-aii.iict.ch
+    access_key_id = minio
+    secret_access_key = <your secret access key>
+```
+
+> You need to replace `<your secret access key>` with the secret access key for the bucket.
+
+> This configuration file should not be commited as it contains the secret to access the bucket.
+
+To pull the data, we use the following command :
+```bash
+dvc pull
+```
+
+Depending on the state of the experiment on the S3 bucket, this command can take a while to complete.
+
+### Run the experiment
+
+You now have the latest "state" of the experiment both for the code and the data. You can now run the experiment.
+
+You can run the experiment using dvc. It is an abstraction of the three stages `prepre`, `train` and `infere`. Or you can run the stages individually. Depending on the state of the data you pulled from the S3 bucket, dvc might skip some stages. If you want to force the execution of a stage you can use the `--force` flag or to force the execution of all stages you can use the `--force-all` flag.
+
+To run all at once with dvc you can do :
+
+```bash
+dvc repro
+dvc repro --force-all
+```
+### Push the results
+
+Once the experiment is done, you can push the results to the S3 bucket using the following command :
+```bash
+dvc push
+git add -A
+git commit -m "Experiment results"
+git push
+```
 
 
-Next steps are inspired from the hugginface tutorial :
-https://github.com/huggingface/diffusers/tree/main/examples/dreambooth
-that is a better version of :
-https://huggingface.co/docs/diffusers/training/dreambooth
 
 ## K8s gitlab runner setup
 
@@ -255,92 +349,9 @@ accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/
 ```  
 Otherwise, the output of the checkpoint will be lacking the unet/ folder and it will be impossible to make images from that checkpoint.
 
-### state observation
+## Create the dvc Pipeline
 
-To better understand  what is  where in the pod here are a few results of LS commands
-
-This is the root folder of the cloned repository.
-```bash
-root@gpu-pod:/dreambooth-api# ls
-README.md  class  config.toml  data  docker  k8s  model  requirements.txt  scripts
-```
-Most things are executed from the scripts folder. Note the `diffusers` folder that has been cloned by the `installation.sh` script.
-```bash
-root@gpu-pod:/dreambooth-api/scripts# ls
-INSTANCE_DIR  OUTPUT_DIR  diffusers  infere.py  installation.sh  report.sh  train.sh  train_dreambooth.py
-```
-
-Inside the `model/tony/` folder we can see the model files and the checkpoints.
-```bash
-root@gpu-pod:/dreambooth-api/model/tony# ls
-checkpoint-40  checkpoint-80  feature_extractor  logs  model_index.json  safety_checker  scheduler  text_encoder  tokenizer  unet  vae
-```
-
-The content of a checkpoint folder is as follows:
-```bash
-root@gpu-pod:/dreambooth-api/model/tony/checkpoint-40# ls -la
-total 7677192
--rw-r--r--  1 root root 7861401379 Feb 27 10:10 optimizer.bin
--rw-r--r--  1 root root      14727 Feb 27 10:10 random_states_0.pkl
--rw-r--r--  1 root root        563 Feb 27 10:10 scheduler.bin
-drwxr-xr-x  2 root root       4096 Feb 27 10:10 text_encoder
-drwxr-xr-x  2 root root       4096 Feb 27 10:10 unet
-```
-
-### Copy image from pod to local
-```bash
-kubectl cp dreambooth-experience/gpu-pod:/dreambooth-api/images/ ./images/ 
-```
-
-### Temps de run
-- 2 minutes installation de l'environment
-- 1 mintute téléchargement du model
-
-
-
-## Using DVC to reproduce the experiment
-
-### install cloud sdk
-
-```bash
-# This is for hte linux x86_64 architecture see https://cloud.google.com/sdk/docs/install-sdk#linux for other architectures
-curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-421.0.0-linux-x86_64.tar.gz
-# Extract the SDK
-tar -xf google-cloud-cli-421.0.0-linux-x86_64.tar.gz
-
-# install the sdk. it will prompt you to setup the PATH variable so the next command can be run
-./google-cloud-sdk/install.sh
-
-# Initialize and login to Google Cloud
-gcloud init
-
-# List all available projects
-gcloud projects list
-
-# Select your Google Cloud project
-gcloud config set project <id of your gcp project>
-
-# Set authentication for our ML experiment
-# https://dvc.org/doc/command-reference/remote/add#google-cloud-storage
-# https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
-gcloud auth application-default login
-```
-
-### Create a bucket and add it to DVC
-
-```bash
-# Create a bucket for the experiment
-gcloud storage buckets create gs://dreambooth-experience-bucket \
-  --location=EUROPE-WEST6 \
-  --uniform-bucket-level-access \
-  --public-access-prevention
-
-# Initialize DVC in the working directory
-dvc init
-
-# Add the Google Storage remote bucket
-dvc remote add -d data gs://<my bucket name>/dvcstore
-```
+This has already been done in this repository. You can find the pipeline in the `./dvc` folder. The pipeline is composed of 3 stages : `prepare`, `train` and `infer`. The following is a description of each stage and the commands used to create them.
 
 ### Add preparation stage
 
@@ -387,20 +398,19 @@ dvc stage add -n train \
   sh scripts/train.py
 ```
 
-# config s3 for minio (local) for dvc
-add to file `.dvc/config` to have it run locally.
-```
-[core]
-    remote = myremote
-['remote "myremote"']
-    url = s3://dreambooth-bucket
-    endpointurl = https://minio-aii.iict.ch
-    access_key_id = minio
-```
+### Add inference stage
 
-To avoid having the password stored locally we will use the `dvc remote modify` command to set the password.
-You can use the following command to set the password in the terminal without it being stored in the history.
+This stage will take the trained model and generate images from it based on a prompt defined in the params.yaml file. The output of this stage will be in the `/images` folder.
+
 ```bash
-read -sp 'S3 Access key : ' SECRET_ACCESS_KEY
-dvc remote modify myremote secret_access_key $SECRET_ACCESS_KEY
+dvc stage add -n infere \
+  -p infere.prompt \
+  -p infere.guidance \
+  -p infere.infere_seed \
+  -p infere.number_images \
+  -p infere.steps \
+  -d scripts/infere.py \
+  -d models \
+  -o images \
+  python3 scripts/infere.py
 ```
