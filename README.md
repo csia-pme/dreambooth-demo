@@ -242,18 +242,18 @@ You can create the file with the following command :
 
 ```bash
 dvc remote add myremote s3://dreambooth-bucket && \
-    dvc remote modify myremote endpointurl https://minio-aii.iict.ch && \
-    dvc remote modify myremote access_key_id minio
+    dvc remote modify myremote endpointurl https://minio-aii.iict.ch
 ```
 
-To add the secret access key, you can use the following command :
+Next, you can add the MinIO credentials to the DVC config with the following command :
 
 ```bash
-echo -n 'S3 Access key : ' && \
-    read -s SECRET_ACCESS_KEY && \
-    dvc remote modify --local myremote secret_access_key $SECRET_ACCESS_KEY && \
-    unset SECRET_ACCESS_KEY && \
-    echo -e '\nAdded key to dvc local config'
+echo -n 'MinIO S3 Secret Access Key : ' && \
+    read -s MINIO_SECRET_ACCESS_KEY && \
+    dvc remote modify --local myremote access_key_id minio && \
+    dvc remote modify --local myremote secret_access_key $MINIO_SECRET_ACCESS_KEY && \
+    unset MINIO_SECRET_ACCESS_KEY && \
+    echo -e '\nAdded MinIO credentials to DVC config'
 ```
 
 > **!!! WARNING !!!**
