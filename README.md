@@ -11,6 +11,7 @@ This is a simple experiment to MLOpsify the DreamBooth project using DVC and CML
       - [Create a Namespace](#create-a-namespace)
       - [Configure the Namespace](#configure-the-namespace)
     - [Configure MinIO](#configure-minio)
+    - [Configure MiniKube](#configure-minikube)
   - [Run the Experiment on the Cluster Manually](#run-the-experiment-on-the-cluster-manually)
     - [Connect to the Environment](#connect-to-the-environment)
       - [Create the K8s Pod](#create-the-k8s-pod)
@@ -31,15 +32,16 @@ This is a simple experiment to MLOpsify the DreamBooth project using DVC and CML
     - [Setup Runner](#setup-runner)
       - [Install cert-manager in your cluster](#install-cert-manager-in-your-cluster)
       - [Generate a GitHub Personal Access Token (PAT)](#generate-a-github-personal-access-token-pat)
-      - [Deploy and Configure ARC](#deploy-and-configure-arc)
+      - [Configure ARC](#configure-arc)
       - [Configure PAT as a Secret in your Cluster](#configure-pat-as-a-secret-in-your-cluster)
-      - [Create the GitHub Self-hosted Runners](#create-the-github-self-hosted-runners)
+      - [Deploy the GitHub Self-hosted Runner](#deploy-the-github-self-hosted-runner)
     - [Verify Workflows](#verify-workflows)
   - [Multi-GPU Checkpoint Inference](#multi-gpu-checkpoint-inference)
     - [Create the DVC Pipeline](#create-the-dvc-pipeline)
       - [Add Preparation Stage](#add-preparation-stage)
       - [Add Train Stage](#add-train-stage)
       - [Add Inference Stage](#add-inference-stage)
+  - [Clean up](#clean-up)
   - [Resources](#resources)
   - [Contributing](#contributing)
     - [Markdown Linting and Formatting](#markdown-linting-and-formatting)
@@ -68,8 +70,8 @@ B --> C[Use the new model to create images of the subject]
 
 - VPN connection to the IICT network
 - Access to the IICT Kubernetes cluster (https://rancher.iict.ch/)
+- Access to IICT MinIo (https://minio.iict.ch)
 - Kubernetes CLI ([`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
-- Access to ICT MinIo (https://minio.iict.ch)
 
 ## Setup
 
@@ -106,6 +108,12 @@ kubectl config set-context --current --namespace=<your namespace name>
 
 > **Note :** Replace `<your namespace name>` with the name of the namespace you created at the previous step.
 
+Verify that the namespace is set as the default namespace for your current context :
+
+```bash
+kubectl config view --minify | grep namespace:
+```
+
 ### Configure MinIO
 
 You will need to configure MinIO to be able to access the data. To do this you can follow these steps :
@@ -116,6 +124,30 @@ You will need to configure MinIO to be able to access the data. To do this you c
 - Enter the name of the bucket you want to create
 - Click on **Create Bucket**
   As this experiment requires a lot of VRAM we recommend you run it on a GPU enabled machine with more than 24Go of VRAM. We used 2x Nvidia A40 GPUs with 48 Go of VRAM but you can probably get away with less if you edit the training script to use less VRAM. (see https://github.com/huggingface/diffusers/tree/main/examples/dreambooth for more details on possible configurations of the training script)
+
+### Configure MiniKube
+
+If you wish to run the experiment locally you can use MiniKube.
+
+You can install it by following the instructions [here](https://minikube.sigs.k8s.io/docs/start/).
+
+Once installed you can start a cluster with the following command :
+
+```bash
+minikube start
+```
+
+> **Tip :** You can specify the number of CPUs and the amount of RAM you want to allocate to the cluster by using the `--cpus` and `--memory` flags.
+
+This will start a local cluster and MiniKube will configure your `~/.kube/config` file to use the "minikube" cluster and "default" namespace.
+
+All of the commands in this tutorial are the same for MiniKube and the IICT cluster.
+
+If you would like to switch back to the IICT cluster you can run the following command :
+
+```bash
+kubectl config use-context iict --namespace <your namespace name>
+```
 
 ## Run the Experiment on the Cluster Manually
 
@@ -485,8 +517,6 @@ Let's start by installing the GitHub runner on the cluster. You can find the doc
 
 #### Install cert-manager in your cluster
 
-TODO: This is currently not working, as more permissions are needed to install cert-manager on the cluster.
-
 For more information, see "[cert-manager](https://cert-manager.io/docs/installation/)."
 
 ```bash
@@ -501,31 +531,29 @@ Select the `repo` scope (Full control).
 
 For more information, see "[Creating a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)."
 
-#### Deploy and Configure ARC
+#### Configure ARC
 
-To deploy ARC, run the following command:
+To configure ARC, run the following command :
 
 ```bash
-kubectl apply -f https://github.com/actions/actions-runner-controller/\
-releases/download/v0.22.0/actions-runner-controller.yaml
+helm repo add actions-runner-controller https://actions-runner-controller.github.io/actions-runner-controller
 ```
-
-> **Note :** Replace "v0.22.0" with the version of actions-runner-controller you wish to deploy.
 
 #### Configure PAT as a Secret in your Cluster
 
-Run the following command to create a secret named `controller-manager` in the `actions-runner-system` namespace.
+Run the following command to configure the GitHub PAT as a secret in the `actions-runner-system` namespace.
 
 ```bash
 echo -n 'Enter the GitHub PAT : ' && \
     read -s GITHUB_PAT && \
-    kubectl create secret generic controller-manager \
-    --namespace=actions-runner-system \
-    --from-literal=token=$GITHUB_PAT && \
+    helm upgrade --install --namespace actions-runner-system --create-namespace \
+    --set=authSecret.create=true \
+    --set=authSecret.github_token=$GITHUB_PAT \
+    --wait actions-runner-controller actions-runner-controller/actions-runner-controller && \
     unset GITHUB_PAT
 ```
 
-#### Create the GitHub Self-hosted Runners
+#### Deploy the GitHub Self-hosted Runner
 
 The GitHub runner configuration is stored at `k8s/github-runner-deployment.yaml` file.
 
@@ -543,10 +571,12 @@ To verify that the setup was successful, you can run the following commands :
 
 ```bash
 $ kubectl get runners
-```
+NAME                               REPOSITORY                               STATUS
+github-custom-runner-cst5x-6268k   csia-pme/dreambooth-example-with-mlops   Running
 
-```bash
-kubectl get pods
+$ kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+github-custom-runner-cst5x-6268k   2/2     Running   0          1m
 ```
 
 ## Multi-GPU Checkpoint Inference
@@ -626,6 +656,27 @@ dvc stage add -n infere \
   -d models \
   -o images \
   python3 scripts/infere.py
+```
+
+## Clean up
+
+To clean up the resources created in this tutorial, run the following commands:
+
+```bash
+# Delete the GitHub Self-hosted Runners
+kubectl delete -f k8s/github-runner-deployment.yaml
+# Delete the ARC deployment
+helm uninstall actions-runner-controller --namespace actions-runner-system
+# Delete the cert-manager namespace
+kubectl delete namespace cert-manager
+# Delete the actions-runner-system namespace
+kubectl delete namespace actions-runner-system
+```
+
+If you used minikube to create the cluster, you can delete the cluster by running the following command :
+
+```bash
+minikube delete --all
 ```
 
 ## Resources
