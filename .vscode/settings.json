@@ -1,0 +1,18 @@
+{
+    "prettier.tabWidth": 2,
+    "prettier.useTabs": false,
+    "[markdown]": {
+        "editor.tabSize": 4,
+        "editor.wordWrap": "on",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+}
