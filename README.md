@@ -109,8 +109,8 @@ spec:
       resources:
         limits:
           nvidia.com/gpu: 1
-      command: ["/bin/bash"]
-      args: ["-c", "while true; do echo 'Running GPU pod...'; sleep 30; done"]
+      command: ['/bin/bash']
+      args: ['-c', "while true; do echo 'Running GPU pod...'; sleep 30; done"]
   restartPolicy: Never
 ```
 
@@ -182,11 +182,11 @@ If you want to install the requirements manually, you can do the following :
 
 > **Note:** You need to have Git installed
 
+The diffusers are used to train the model. We will use the DreamBooth example to fine tune the model.
+
 ```bash
 git clone https://github.com/huggingface/diffusers
 ```
-
-The diffusers are used to train the model. We will use the DreamBooth example to fine tune the model.
 
 #### Install Python Requirements
 
@@ -207,7 +207,16 @@ pip install -r ./diffusers/examples/dreambooth/requirements.txt
 
 #### Install JQ and YQ
 
-To give access to the parameters in `params.yaml` to our `sh` scripts, we use `yq` over `jq`. This is used to centralize changes to the parameters in one file without needing to modify the experiment code.
+To give access to the parameters in `params.yaml` to our `sh` scripts, we use `yq` over `jq`. `jq` is a command line JSON processor. `yq` is a wrapper around `jq` that allows you to read and write yaml files.
+
+You can see an example of reading a parameter in `scripts/train.sh` using yq :
+
+```bash
+MODEL_NAME=$(yq -r '.train.model_name' params.yaml)
+...
+```
+
+This is used to centralize changes to the parameters in one file without needing to modify the experiment code.
 
 ```bash
 apt install -y jq
@@ -222,7 +231,7 @@ Parameters can be found in `params.yaml` in the root of the repo.
 
 When you installed the dependencies from our `requirement.txt` file you should have installed DVC. DVC is used to manage the data used in the experiment.
 
-DVC uses S3 to store the data. For each data tracked and stored by DVC on S3, a metadata file is created in the `.dvc` folder. This metadata file contains the hash of the data and the path to the data on S3. The metadata file is used to check if the data has changed and if it needs to be updated.
+DVC uses S3 to store the data. For each data tracked and stored by DVC on S3, metadata about their state are tracked using the `dvc.lock` and `.dvc` files. The metadata file is used to check if the data has changed and if it needs to be updated when dvc needs to access it (eg. when using `dvc repro` it can skip steps if all their dependencies are unchanges by using their cached output).
 
 > **Note:** Git is in charge of tracking the metadata files so you should commit the metadata files but not the data itself.
 
@@ -236,7 +245,7 @@ dvc init
 
 This will create a `.dvc` folder in the root of the repo.
 
-We will use an S3 self-hosted by a MinIO service. To configure DVC, we need to create a `~/.dvc/config` file.
+We will use an S3 self-hosted by a MinIO service to store the data. To configure DVC to use it, we need to create a `~/.dvc/config` file.
 
 You can create the file with the following command :
 
@@ -272,12 +281,13 @@ Depending on the state of the experiment on the S3 bucket, this command can take
 
 You now have the latest "state" of the experiment both for the code and the data. You can now run the experiment.
 
-You can run the experiment using DVC. It is an abstraction of the three stages `prepre`, `train` and `infere`. Or you can run the stages individually. Depending on the state of the data you pulled from the S3 bucket, DVC might skip some stages. If you want to force the execution of a stage you can use the `--force` flag or to force the execution of all stages you can use the `--force-all` flag.
+You can run the experiment using DVC. It is an abstraction of the three stages `prepre`, `train` and `infere`. Or you can run the stages individually. Depending on the state of the data you pulled from the S3 bucket, DVC might skip some stages as their dependencies are unchanges. If you want to force the execution of a stage you can use the `--force` flag or to force the execution of all stages you can use the `--force-all` flag.
 
 To run all at once with DVC you can do :
 
 ```bash
 dvc repro
+ # or
 dvc repro --force-all
 ```
 
@@ -296,13 +306,13 @@ git push
 
 ### K8s GitLab Runner Setup
 
-We want our GitLab pipeline to execute within the Kubernetes cluster. To do so we need to install a GitLab runner on the cluster.
+We want our GitLab pipeline to execute within the Kubernetes cluster. To do so we need to install a GitLab runner on the cluster. Note that what we install is not the final pod used to execute our pipelines but a pod that will spawn other pods to execute the pipelines as needed.
 
 > See https://docs.gitlab.com/runner/install/kubernetes.html
 
 > https://www.youtube.com/watch?v=0Fes86qtBSc
 
-Using helm we install the runner on the cluster
+Using helm we install the gitlab runner on the cluster
 
 ```bash
 helm repo add gitlab https://charts.gitlab.io
@@ -355,11 +365,11 @@ Next step is to create a RBAC configuration to give permission to create pods to
 rbac:
   create: true # create a service account and a role binding
   rules: # these are the default roles uncommented
-    - resources: ["configmaps", "pods", "pods/attach", "secrets", "services"]
-      verbs: ["get", "list", "watch", "create", "patch", "update", "delete"]
-    - apiGroups: [""]
-      resources: ["pods/exec"]
-      verbs: ["create", "patch", "delete"]
+    - resources: ['configmaps', 'pods', 'pods/attach', 'secrets', 'services']
+      verbs: ['get', 'list', 'watch', 'create', 'patch', 'update', 'delete']
+    - apiGroups: ['']
+      resources: ['pods/exec']
+      verbs: ['create', 'patch', 'delete']
 #[...]
 ```
 
