@@ -12,7 +12,6 @@ jobs:
       image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
     env:
       PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
-      GIT_DEPTH: '0'
     steps:
       - name: GPU Info
         run: nvidia-smi
@@ -27,7 +26,9 @@ jobs:
           dvc remote modify myremote access_key_id ${{ secrets.MINIO_KEY_ID }}
           dvc remote modify myremote secret_access_key ${{ secrets.MINIO_ACCESS_KEY }}
       - name: Pull data from S3
-        run: dvc pull
+        run:  | 
+          ls -la
+          dvc pull
       - name: Run experiment
         run: dvc repro
       - name: Archive artifacts
