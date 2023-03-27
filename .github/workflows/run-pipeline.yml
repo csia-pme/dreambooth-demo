@@ -37,9 +37,9 @@ jobs:
       - name: Run experiment
         run: dvc repro
       - name: Archive artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: Experiment artifacts
+          name: image-grid-artifact
           path: ./images
         env:
           retention-days: 7
@@ -57,8 +57,8 @@ jobs:
         with:
           fetch-depth: 0
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: Experiment artifacts
+          name: image-grid-artifact
       - name: Run report
         run: sh ./scripts/report.sh
