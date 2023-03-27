@@ -1,0 +1,20 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: github-custom-runner
+spec:
+  replicas: 1
+  template:
+    spec:
+      repository: csia-pme/dreambooth-example-with-mlops
+      # This is not configured yet for running on IICT cluster
+      # The idea would be to create two config files, one for
+      # using with MiniCube locally and the other one for the
+      # IICT cluster
+      containers:
+      - name: gpu-container
+        image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
+        env: []
+        resources:
+          limits:
+            nvidia.com/gpu: 1

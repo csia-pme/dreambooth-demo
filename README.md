@@ -4,11 +4,19 @@ This is a simple experiment to MLOpsify the DreamBooth project using DVC and CML
 
 - [DreamBooth Experiment](#dreambooth-experiment)
   - [The Experiment](#the-experiment)
+  - [Pre-requisites](#pre-requisites)
+  - [Setup](#setup)
+    - [Configure Kubernetes](#configure-kubernetes)
+      - [Add KubeConfig](#add-kubeconfig)
+      - [Create a Namespace](#create-a-namespace)
+      - [Configure the Namespace](#configure-the-namespace)
+    - [Configure MinIO](#configure-minio)
+    - [Configure MiniKube](#configure-minikube)
   - [Run the Experiment on the Cluster Manually](#run-the-experiment-on-the-cluster-manually)
     - [Connect to the Environment](#connect-to-the-environment)
       - [Create the K8s Pod](#create-the-k8s-pod)
       - [Log onto the Pod](#log-onto-the-pod)
-    - [Clone the Experiment Repository](#clone-the-experiment-repository)
+    - [Clone the Repository](#clone-the-repository)
     - [Installation](#installation)
       - [Clone the Diffusers Repo](#clone-the-diffusers-repo)
       - [Install Python Requirements](#install-python-requirements)
@@ -20,12 +28,23 @@ This is a simple experiment to MLOpsify the DreamBooth project using DVC and CML
     - [K8s GitLab Runner Setup](#k8s-gitlab-runner-setup)
     - [Kubernetes Runner Configuration](#kubernetes-runner-configuration)
       - [Assign GPU to the Pipeline Pods](#assign-gpu-to-the-pipeline-pods)
-      - [Multi-GPU Checkpoint Inference](#multi-gpu-checkpoint-inference)
-      - [Create the DVC Pipeline](#create-the-dvc-pipeline)
-        - [Add Preparation Stage](#add-preparation-stage)
-        - [Add Train Stage](#add-train-stage)
-        - [Add Inference Stage](#add-inference-stage)
+  - [Integrate with GitHub](#integrate-with-github)
+    - [Setup Runner](#setup-runner)
+      - [Install cert-manager in your cluster](#install-cert-manager-in-your-cluster)
+      - [Generate a GitHub Personal Access Token (PAT)](#generate-a-github-personal-access-token-pat)
+      - [Configure ARC](#configure-arc)
+      - [Configure PAT as a Secret in your Cluster](#configure-pat-as-a-secret-in-your-cluster)
+      - [Deploy the GitHub Self-hosted Runner](#deploy-the-github-self-hosted-runner)
+    - [Verify Workflows](#verify-workflows)
+  - [Multi-GPU Checkpoint Inference](#multi-gpu-checkpoint-inference)
+    - [Create the DVC Pipeline](#create-the-dvc-pipeline)
+      - [Add Preparation Stage](#add-preparation-stage)
+      - [Add Train Stage](#add-train-stage)
+      - [Add Inference Stage](#add-inference-stage)
+  - [Clean up](#clean-up)
   - [Resources](#resources)
+  - [Contributing](#contributing)
+    - [Markdown Linting and Formatting](#markdown-linting-and-formatting)
 
 ## The Experiment
 
@@ -47,19 +66,102 @@ B --> C[Use the new model to create images of the subject]
 </center> 
 </div>
 
+## Pre-requisites
+
+- VPN connection to the IICT network
+- Access to the IICT Kubernetes cluster (https://rancher.iict.ch/)
+- Access to IICT MinIo (https://minio.iict.ch)
+- Kubernetes CLI ([`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
+
+## Setup
+
+### Configure Kubernetes
+
+#### Add KubeConfig
+
+You first need to add the Kubernetes config file to your local machine. You can do this by following these steps :
+
+- Login to [Rancher](https://rancher.iict.ch/dashboard/)
+- Select the `iict` cluster
+- On the top right corner click on **Download KubeConfig** button
+- Move the downloaded file to `~/.kube/config`
+
+> **WARNING :** The KubeConfig file is a sensitive file. You should not share it or commit it to any public repository.
+
+#### Create a Namespace
+
+To create a namespace for this experiment you can run the following command :
+
+```bash
+kubectl create namespace <your namespace name>
+```
+
+> **Note :** Replace `<your namespace name>` with the name of the namespace you want to create.
+
+#### Configure the Namespace
+
+Finally, set the namespace as the default namespace for your current context :
+
+```bash
+kubectl config set-context --current --namespace=<your namespace name>
+```
+
+> **Note :** Replace `<your namespace name>` with the name of the namespace you created at the previous step.
+
+Verify that the namespace is set as the default namespace for your current context :
+
+```bash
+kubectl config view --minify | grep namespace:
+```
+
+### Configure MinIO
+
+You will need to configure MinIO to be able to access the data. To do this you can follow these steps :
+
+- Login to [MinIO](https://console-minio-aii.iict.ch/login)
+- On the sidebar, select **Buckets**
+- Click on **Create a new bucket**
+- Enter the name of the bucket you want to create
+- Click on **Create Bucket**
+  As this experiment requires a lot of VRAM we recommend you run it on a GPU enabled machine with more than 24Go of VRAM. We used 2x Nvidia A40 GPUs with 48 Go of VRAM but you can probably get away with less if you edit the training script to use less VRAM. (see https://github.com/huggingface/diffusers/tree/main/examples/dreambooth for more details on possible configurations of the training script)
+
+### Configure MiniKube
+
+If you wish to run the experiment locally you can use MiniKube.
+
+You can install it by following the instructions [here](https://minikube.sigs.k8s.io/docs/start/).
+
+Once installed you can start a cluster with the following command :
+
+```bash
+minikube start
+```
+
+> **Tip :** You can specify the number of CPUs and the amount of RAM you want to allocate to the cluster by using the `--cpus` and `--memory` flags.
+
+This will start a local cluster and MiniKube will configure your `~/.kube/config` file to use the "minikube" cluster and "default" namespace.
+
+All of the commands in this tutorial are the same for MiniKube and the IICT cluster.
+
+If you would like to switch back to the IICT cluster you can run the following command :
+
+```bash
+kubectl config use-context iict --namespace <your namespace name>
+```
+
 ## Run the Experiment on the Cluster Manually
 
 As this experiment requires a lot of VRAM we recommend you run it on a GPU enabled machine with more than 24Go of VRAM. We used 2x Nvidia A40 GPUs with 48 Go of VRAM but you can probably get away with less if you edit the training script to use less VRAM. (see https://github.com/huggingface/diffusers/tree/main/examples/dreambooth for more details on possible configurations of the training script)
 
 > You can get a look at the `gitlab-ci.yml` file to see the pipeline execution steps.
 
-> You will need the full content of this repository to run the experiment
+> You will need the full context of this repository to run the experiment
 
 <div class="center">
 <h3>
-  <center> 
+  <center>
     Full run of the experiment
-  </center> 
+  </center>
 </h3>
 <center>
 
@@ -93,7 +195,7 @@ If you want to run the experiment on a Kubernetes pod in your cluster you can do
 
 > For our experiment we run the pod in a namespace called `dreambooth-experience`.
 
-You can either use the command line version or go through [rancher](https://rancher.iict.ch/dashboard/) web interface to create the pod. Our rancher is only available when connect to the VPN, being connected to the Wifi of the school is not enough.
+You can either use the command line version or go through [Rancher](https://rancher.iict.ch/dashboard/) web interface to create the pod. Our rancher is only available when connect to the VPN, being connected to the Wifi of the school is not enough.
 
 I created a pod on the k8s cluster based on the following yaml file:
 
@@ -109,8 +211,8 @@ spec:
       resources:
         limits:
           nvidia.com/gpu: 1
-      command: ['/bin/bash']
-      args: ['-c', "while true; do echo 'Running GPU pod...'; sleep 30; done"]
+      command: ["/bin/bash"]
+      args: ["-c", "while true; do echo 'Running GPU pod...'; sleep 30; done"]
   restartPolicy: Never
 ```
 
@@ -123,7 +225,7 @@ Note that we use the container image `nvidia/cuda:12.0.1-runtime-ubuntu22.04` to
 > Our pod is named `gpu-pod` and is in the `dreambooth-experience` namespace.
 
 ```bash
-kubectl exec -it gpu-pod --namespace=dreambooth-experience -- /bin/bash
+kubectl exec -it gpu-pod -- /bin/bash
 ```
 
 Congratulation, you now have a shell on a GPU enabled machine in our K8s cluster. If you want to be sure you have access to the GPU from the pod you created you can run the following command :
@@ -158,7 +260,7 @@ Wed Mar 22 07:48:09 2023
 +-----------------------------------------------------------------------------+
 ```
 
-### Clone the Experiment Repository
+### Clone the Repository
 
 > You need to have Git installed: `apt install -y git`
 
@@ -174,13 +276,13 @@ Most of the following steps are run from the root of the repo.
 
 The `installation.sh` script will install all the requirements to run the experiment in a Debian based environment such as the k8s pod we created earlier.
 
-> **Note:** This will not create a virtual environment, it will install the requirements globally on .
+> **Note :** This will not create a virtual environment, it will install the requirements globally on .
 
 If you want to install the requirements manually, you can do the following :
 
 #### Clone the Diffusers Repo
 
-> **Note:** You need to have Git installed
+> **Note :** You need to have Git installed
 
 The diffusers are used to train the model. We will use the DreamBooth example to fine tune the model.
 
@@ -209,7 +311,7 @@ pip install -r ./diffusers/examples/dreambooth/requirements.txt
 
 To give access to the parameters in `params.yaml` to our `sh` scripts, we use `yq` over `jq`. `jq` is a command line JSON processor. `yq` is a wrapper around `jq` that allows you to read and write yaml files.
 
-You can see an example of reading a parameter in `scripts/train.sh` using yq :
+You can see an example of reading a parameter in `scripts/train.sh` using `yq` :
 
 ```bash
 MODEL_NAME=$(yq -r '.train.model_name' params.yaml)
@@ -231,9 +333,9 @@ Parameters can be found in `params.yaml` in the root of the repo.
 
 When you installed the dependencies from our `requirement.txt` file you should have installed DVC. DVC is used to manage the data used in the experiment.
 
-DVC uses S3 to store the data. For each data tracked and stored by DVC on S3, metadata about their state are tracked using the `dvc.lock` and `.dvc` files. The metadata file is used to check if the data has changed and if it needs to be updated when dvc needs to access it (eg. when using `dvc repro` it can skip steps if all their dependencies are unchanges by using their cached output).
+DVC uses S3 to store the data. For each data tracked and stored by DVC on S3, metadata about their state are tracked using the `dvc.lock` and `.dvc` files. The metadata file is used to check if the data has changed and if it needs to be updated when dvc needs to access it (eg. when using `dvc repro` it can skip steps if all their dependencies are unchanged by using their cached output).
 
-> **Note:** Git is in charge of tracking the metadata files so you should commit the metadata files but not the data itself.
+> **Note :** Git is in charge of tracking the metadata files so you should commit the metadata files but not the data itself.
 
 We first initialize DVC in the repo :
 
@@ -241,7 +343,7 @@ We first initialize DVC in the repo :
 dvc init
 ```
 
-> **Note:** If DVC was already initialized, you can use `dvc init -f` to force reinitialize it.
+> **Note :** If DVC was already initialized, you can use `dvc init -f` to force reinitialize it.
 
 This will create a `.dvc` folder in the root of the repo.
 
@@ -250,9 +352,11 @@ We will use an S3 self-hosted by a MinIO service to store the data. To configure
 You can create the file with the following command :
 
 ```bash
-dvc remote add myremote s3://dreambooth-bucket && \
+dvc remote add myremote s3://<your bucket name> && \
     dvc remote modify myremote endpointurl https://minio-aii.iict.ch
 ```
+
+> **Note :** Replace `<your bucket name>` with the name of the bucket you want to use.
 
 Next, you can add the MinIO credentials to the DVC config with the following command :
 
@@ -265,9 +369,7 @@ echo -n 'MinIO S3 Secret Access Key : ' && \
     echo -e '\nAdded MinIO credentials to DVC config'
 ```
 
-> **!!! WARNING !!!**
->
-> You should not store secrets in the `~/.dvc/config` file. You should use the `--local` flag to store the secret in the local config file. This file is ignored by Git. See the [DVC config documentation](https://dvc.org/doc/command-reference/config#description) for more information.
+> **WARNING :** You should not store secrets in the `~/.dvc/config` file. You should use the `--local` flag to store the secret in the local config file. This file is ignored by Git. See the [DVC config documentation](https://dvc.org/doc/command-reference/config#description) for more information.
 
 To pull the data, we use the following command :
 
@@ -281,7 +383,7 @@ Depending on the state of the experiment on the S3 bucket, this command can take
 
 You now have the latest "state" of the experiment both for the code and the data. You can now run the experiment.
 
-You can run the experiment using DVC. It is an abstraction of the three stages `prepre`, `train` and `infere`. Or you can run the stages individually. Depending on the state of the data you pulled from the S3 bucket, DVC might skip some stages as their dependencies are unchanges. If you want to force the execution of a stage you can use the `--force` flag or to force the execution of all stages you can use the `--force-all` flag.
+You can run the experiment using DVC. It is an abstraction of the three stages `prepre`, `train` and `infere`. Or you can run the stages individually. Depending on the state of the data you pulled from the S3 bucket, DVC might skip some stages as their dependencies are unchanged. If you want to force the execution of a stage you can use the `--force` flag or to force the execution of all stages you can use the `--force-all` flag.
 
 To run all at once with DVC you can do :
 
@@ -320,6 +422,7 @@ helm repo update
 ```
 
 We need to create a configuration file for the runner :
+
 This needs to be downloaded on the machine we use to administrate the K8s cluster.
 
 ```bash
@@ -365,11 +468,11 @@ Next step is to create a RBAC configuration to give permission to create pods to
 rbac:
   create: true # create a service account and a role binding
   rules: # these are the default roles uncommented
-    - resources: ['configmaps', 'pods', 'pods/attach', 'secrets', 'services']
-      verbs: ['get', 'list', 'watch', 'create', 'patch', 'update', 'delete']
-    - apiGroups: ['']
-      resources: ['pods/exec']
-      verbs: ['create', 'patch', 'delete']
+    - resources: ["configmaps", "pods", "pods/attach", "secrets", "services"]
+      verbs: ["get", "list", "watch", "create", "patch", "update", "delete"]
+    - apiGroups: [""]
+      resources: ["pods/exec"]
+      verbs: ["create", "patch", "delete"]
 #[...]
 ```
 
@@ -393,18 +496,90 @@ runners:
 Finally we can install the runner on the cluster
 
 ```bash
-helm upgrade --install --namespace dreambooth-experience gitlab-runner -f ./values.yaml gitlab/gitlab-runner
+helm upgrade --install --namespace <your namespace name> gitlab-runner -f ./values.yaml gitlab/gitlab-runner
 ```
 
 If you need to update an existing runner use
 
 ```bash
-helm upgrade --install --namespace dreambooth-experience gitlab-runner -f ./values.yaml gitlab/gitlab-runner
+helm upgrade --install --namespace <your namespace name> gitlab-runner -f ./values.yaml gitlab/gitlab-runner
 ```
+
+> **Note :** Replace `<your namespace name>` with the name of the namespace you created earlier.
 
 You should now see your runner in the GitLab UI > Repository > Settings > CI/CD > Runners, correctly registered as a Project Runner.
 
-#### Multi-GPU Checkpoint Inference
+## Integrate with GitHub
+
+### Setup Runner
+
+Let's start by installing the GitHub runner on the cluster. You can find the documentation of ARC [here](https://github.com/actions/actions-runner-controller).
+
+#### Install cert-manager in your cluster
+
+For more information, see "[cert-manager](https://cert-manager.io/docs/installation/)."
+
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
+```
+
+> **Note :** This command uses v1.11.0 of cert-manager. Please replace with a later version, if available.
+
+#### Generate a GitHub Personal Access Token (PAT)
+
+Select the `repo` scope (Full control).
+
+For more information, see "[Creating a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)."
+
+#### Configure ARC
+
+To configure ARC, run the following command :
+
+```bash
+helm repo add actions-runner-controller https://actions-runner-controller.github.io/actions-runner-controller
+```
+
+#### Configure PAT as a Secret in your Cluster
+
+Run the following command to configure the GitHub PAT as a secret in the `actions-runner-system` namespace.
+
+```bash
+echo -n 'Enter the GitHub PAT : ' && \
+    read -s GITHUB_PAT && \
+    helm upgrade --install --namespace actions-runner-system --create-namespace \
+    --set=authSecret.create=true \
+    --set=authSecret.github_token=$GITHUB_PAT \
+    --wait actions-runner-controller actions-runner-controller/actions-runner-controller && \
+    unset GITHUB_PAT
+```
+
+#### Deploy the GitHub Self-hosted Runner
+
+The GitHub runner configuration is stored at `k8s/github-runner-deployment.yaml` file.
+
+> **Note :** If you want to use your own repo url, update the `k8s/github-runner-deployment.yaml` file with your repository url.
+
+Apply the configuration to the cluster.
+
+```bash
+kubectl apply -f k8s/github-runner-deployment.yaml
+```
+
+### Verify Workflows
+
+To verify that the setup was successful, you can run the following commands :
+
+```bash
+$ kubectl get runners
+NAME                               REPOSITORY                               STATUS
+github-custom-runner-cst5x-6268k   csia-pme/dreambooth-example-with-mlops   Running
+
+$ kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+github-custom-runner-cst5x-6268k   2/2     Running   0          1m
+```
+
+## Multi-GPU Checkpoint Inference
 
 There is a problem with accelerate when generating checkpoints in a multi-GPU architecture. There are 2 solutions : run without checkpointing or run with a single GPU.
 
@@ -426,16 +601,16 @@ This has already been done in this repository. You can find the pipeline in the 
 This stage will take images in the `data/images` folder and prepare them for training. It will crop them to the size specified in the `prepare.size` parameter (in pixel). The output of this stage will be in the `data/prepared` folder.
 
 - Stage name :
-  - prepare
+  - `prepare`
 - Parameters :
-  - prepare.size
+  - `prepare.size`
 - Dependencies :
-  - scripts/prepare.py
-  - data/images
+  - `scripts/prepare.py`
+  - `data/images`
 - Outputs :
-  - data/prepared
+  - `data/prepared`
 - CMD to run :
-  - python3 scripts/prepare.py
+  - `python3 scripts/prepare.py`
 
 ```bash
 # Add the prepare stage to the DVC pipeline
@@ -483,6 +658,27 @@ dvc stage add -n infere \
   python3 scripts/infere.py
 ```
 
+## Clean up
+
+To clean up the resources created in this tutorial, run the following commands:
+
+```bash
+# Delete the GitHub Self-hosted Runners
+kubectl delete -f k8s/github-runner-deployment.yaml
+# Delete the ARC deployment
+helm uninstall actions-runner-controller --namespace actions-runner-system
+# Delete the cert-manager namespace
+kubectl delete namespace cert-manager
+# Delete the actions-runner-system namespace
+kubectl delete namespace actions-runner-system
+```
+
+If you used minikube to create the cluster, you can delete the cluster by running the following command :
+
+```bash
+minikube delete --all
+```
+
 ## Resources
 
 - **DreamBooth fine-tuning example**
@@ -493,3 +689,12 @@ dvc stage add -n infere \
 
 - **Stable Diffusion Tutorial**
   https://blog.paperspace.com/dreambooth-stable-diffusion-tutorial-1/
+
+## Contributing
+
+### Markdown Linting and Formatting
+
+This repository uses the following VSCode:
+
+- [`spell-right`](https://marketplace.visualstudio.com/items?itemName=ban.spellright) for spell checking
+- [`prettier`](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for formatting markdown files.
