@@ -8,6 +8,8 @@ on:
 jobs:
   train-job:
     runs-on: [self-hosted, github-custom-runner]
+    container:
+      image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
     env:
       PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
       GIT_DEPTH: '0'
@@ -33,10 +35,9 @@ jobs:
           retention-days: 7
 
   report:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, github-custom-runner]
     container:
       image: iterativeai/cml:0-dvc2-base1
-      options: --ipc=host
     needs: train-job
     env:
       REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
