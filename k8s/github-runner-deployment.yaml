@@ -20,3 +20,4 @@ spec:
           nvidia.com/gpu: 1
       labels:
         - github-custom-runner
+        - gpu
