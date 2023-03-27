@@ -2,7 +2,7 @@ name: run-pipeline
 
 on:
   push:
-    branches: [main, feature/github]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -15,6 +15,7 @@ jobs:
     steps:
       - name: GPU Info
         run: nvidia-smi
+        # Update git as actions/checkout@v2 does not copy .git folder which is needed by dvc
       - name: Update Git
         run: |
           apt-get update
