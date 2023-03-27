@@ -11,10 +11,10 @@ spec:
       # The idea would be to create two config files, one for
       # using with MiniCube locally and the other one for the
       # IICT cluster
-      # containers:
-      # - name: gpu-container
-      #   image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
-      #   env: []
-      #   resources:
-      #     limits:
-      #       nvidia.com/gpu: 1
+      containers:
+      - name: gpu-container
+        image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
+        env: []
+        resources:
+          limits:
+            nvidia.com/gpu: 1
