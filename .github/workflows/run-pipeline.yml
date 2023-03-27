@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: GPU Info
         run: nvidia-smi
+      - name: Clone repo
+        uses: actions/checkout@v2
       - name: Install dependencies
         run: sh ./scripts/installation.sh
       - name: Set up DVC credentials
@@ -42,6 +44,8 @@ jobs:
     env:
       REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
     steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
