@@ -48,6 +48,8 @@ jobs:
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
