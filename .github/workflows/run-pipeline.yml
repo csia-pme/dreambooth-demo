@@ -7,7 +7,7 @@ on:
 
 jobs:
   train-job:
-    runs-on: [self-hosted, github-custom-runner, gpu]
+    runs-on: [self-hosted, github-custom-runner]
     env:
       PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
       GIT_DEPTH: '0'
