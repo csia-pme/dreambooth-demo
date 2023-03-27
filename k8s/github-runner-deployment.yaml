@@ -37,23 +37,26 @@ subjects: # points to the ServiceAccount
   name: github-runner-service-account # service account to bind to
 ---
 apiVersion: actions.summerwind.dev/v1alpha1
-kind: Runner
+kind: RunnerDeployment
 metadata:
   name: github-custom-runner
 spec:
-  repository: csia-pme/dreambooth-example-with-mlops
-  containerMode: kubernetes
-  serviceAccountName: github-runner-service-account
-  env: []
-  resources:
-    limits:
-      nvidia.com/gpu: 1
-  workVolumeClaimTemplate:
-    storageClassName: "longhorn"
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 64Gi
-  labels:
-    - github-custom-runner
+  replicas: 1
+  template:
+    spec:
+      repository: csia-pme/dreambooth-example-with-mlops
+      containerMode: kubernetes
+      serviceAccountName: github-runner-service-account
+      env: []
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+      workVolumeClaimTemplate:
+        storageClassName: "longhorn"
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 64Gi
+      labels:
+        - github-custom-runner
