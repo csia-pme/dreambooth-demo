@@ -61,4 +61,6 @@ jobs:
         with:
           name: image-grid-artifact
       - name: Run report
-        run: sh ./scripts/report.sh
+        run: |
+          ls -la
+          sh ./scripts/report.sh
