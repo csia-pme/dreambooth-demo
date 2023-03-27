@@ -22,8 +22,8 @@ jobs:
         run: sh ./scripts/installation.sh
       - name: Set up DVC credentials
         run: |
-          dvc remote modify myremote access_key_id $MINIO_KEY_ID
-          dvc remote modify myremote secret_access_key $MINIO_ACCESS_KEY
+          dvc remote modify myremote access_key_id ${{ secrets.MINIO_KEY_ID }}
+          dvc remote modify myremote secret_access_key ${{ secrets.MINIO_ACCESS_KEY }}
       - name: Pull data from S3
         run: dvc pull
       - name: Run experiment
