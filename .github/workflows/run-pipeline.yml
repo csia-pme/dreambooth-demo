@@ -8,9 +8,6 @@ on:
 jobs:
   train-job:
     runs-on: [self-hosted, github-custom-runner, gpu]
-    container:
-      image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
-      options: --ipc=host
     env:
       PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
       GIT_DEPTH: '0'
