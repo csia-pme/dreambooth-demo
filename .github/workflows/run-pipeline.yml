@@ -15,6 +15,10 @@ jobs:
     steps:
       - name: GPU Info
         run: nvidia-smi
+      - name: Update Git
+        run: |
+          apt-get update
+          apt-get install -y git
       - name: Clone repo
         uses: actions/checkout@v2
         with:
