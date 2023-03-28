@@ -211,8 +211,8 @@ spec:
       resources:
         limits:
           nvidia.com/gpu: 1
-      command: ["/bin/bash"]
-      args: ["-c", "while true; do echo 'Running GPU pod...'; sleep 30; done"]
+      command: ['/bin/bash']
+      args: ['-c', "while true; do echo 'Running GPU pod...'; sleep 30; done"]
   restartPolicy: Never
 ```
 
@@ -468,11 +468,11 @@ Next step is to create a RBAC configuration to give permission to create pods to
 rbac:
   create: true # create a service account and a role binding
   rules: # these are the default roles uncommented
-    - resources: ["configmaps", "pods", "pods/attach", "secrets", "services"]
-      verbs: ["get", "list", "watch", "create", "patch", "update", "delete"]
-    - apiGroups: [""]
-      resources: ["pods/exec"]
-      verbs: ["create", "patch", "delete"]
+    - resources: ['configmaps', 'pods', 'pods/attach', 'secrets', 'services']
+      verbs: ['get', 'list', 'watch', 'create', 'patch', 'update', 'delete']
+    - apiGroups: ['']
+      resources: ['pods/exec']
+      verbs: ['create', 'patch', 'delete']
 #[...]
 ```
 
@@ -515,15 +515,19 @@ You should now see your runner in the GitLab UI > Repository > Settings > CI/CD 
 
 Let's start by installing the GitHub runner on the cluster. You can find the documentation of ARC [here](https://github.com/actions/actions-runner-controller).
 
+> **Note : ** you need to choose what level you want to register your runner against : you can register it at a repository level or at an organization level. If you choose to register it at an organization level, you will need to specify the repository name in the `spec.repository` field of the runner, if you choose to register it at a organization level, you will need to specify the organization name in the `spec.organization` field of the runner. This is done in the 'github-runner-deployment.yaml' file.
+
 #### Install cert-manager in your cluster
 
+The cert-manager is a Kubernetes add-on to automate the management and issuance of TLS certificates from various issuing sources. It will be used to generate a TLS certificate for the GitHub runner. This is mandatory when using a self-hosted ARC runner.
+
 For more information, see "[cert-manager](https://cert-manager.io/docs/installation/)."
+
+> **Note :** This command uses v1.11.0 of cert-manager. Please replace with a later version, if available.
 
 ```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
 ```
-
-> **Note :** This command uses v1.11.0 of cert-manager. Please replace with a later version, if available.
 
 #### Generate a GitHub Personal Access Token (PAT)
 

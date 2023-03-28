@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: github-runner-role
+  name: csia-pme-runner-role
 rules:
 - apiGroups: [""]
   resources: ["pods"]
@@ -22,31 +22,31 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: github-runner-service-account
+  name: csia-pme-runner-service-account
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: github-runner-binding
+  name: csia-pme-runner-binding
 roleRef: # points to the Role
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: github-runner-role # name of Role
+  name: csia-pme-runner-role # name of Role
 subjects: # points to the ServiceAccount
 - kind: ServiceAccount
-  name: github-runner-service-account # service account to bind to
+  name: csia-pme-runner-service-account # service account to bind to
 ---
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: RunnerDeployment
 metadata:
-  name: github-custom-runner
+  name: csia-pme-custom-runner
 spec:
   replicas: 1
   template:
     spec:
-      repository: csia-pme/dreambooth-example-with-mlops
+      organization: csia-pme
       containerMode: kubernetes
-      serviceAccountName: github-runner-service-account
+      serviceAccountName: csia-pme-runner-service-account
       env: []
       resources:
         limits:
@@ -59,4 +59,5 @@ spec:
           requests:
             storage: 64Gi
       labels:
-        - github-custom-runner
+        - csia-pme-custom-runner
+        - gpu
