@@ -64,9 +64,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: image-grid-artifact
+          path: ./images
       - name: Run report
         run: |
-          mkdir -p images
-          mv grid.jpg images/grid.jpg
           ls -la
           sh ./scripts/report.sh
