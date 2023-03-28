@@ -66,5 +66,7 @@ jobs:
           name: image-grid-artifact
       - name: Run report
         run: |
+          mkdir -p images
+          mv grid.jpg images/grid.jpg
           ls -la
           sh ./scripts/report.sh
