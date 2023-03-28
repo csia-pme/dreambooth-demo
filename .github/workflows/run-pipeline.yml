@@ -8,7 +8,7 @@ on:
 jobs:
   train-job:
     runs-on: 
-      group: csia-pme/default
+      group: organization/default
       labels: [self-hosted, gpu]
     container:
       image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
@@ -48,7 +48,7 @@ jobs:
 
   report:
     runs-on:
-      group: csia-pme/default
+      group: organization/default
       labels: [self-hosted, gpu]
     container:
       image: iterativeai/cml:0-dvc2-base1
