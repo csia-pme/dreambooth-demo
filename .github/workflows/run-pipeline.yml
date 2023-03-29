@@ -7,46 +7,65 @@ on:
 
 jobs:
   train-job:
-    runs-on: ubuntu-latest
+    runs-on: 
+      group: default
+      labels: [self-hosted, gpu]
     container:
       image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
-      options: --ipc=host
     env:
       PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
-      GIT_DEPTH: '0'
     steps:
       - name: GPU Info
         run: nvidia-smi
+        # Update git as actions/checkout@v2 does not copy .git folder which is needed by dvc
+      - name: Update Git
+        run: |
+          apt-get update
+          apt-get install -y git
+      - name: Clone repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Install dependencies
         run: sh ./scripts/installation.sh
       - name: Set up DVC credentials
         run: |
-          dvc remote modify myremote access_key_id $MINIO_KEY_ID
-          dvc remote modify myremote secret_access_key $MINIO_ACCESS_KEY
+          dvc remote modify myremote access_key_id ${{ secrets.MINIO_KEY_ID }}
+          dvc remote modify myremote secret_access_key ${{ secrets.MINIO_ACCESS_KEY }}
       - name: Pull data from S3
-        run: dvc pull
+        run:  | 
+          ls -la
+          dvc pull
       - name: Run experiment
         run: dvc repro
       - name: Archive artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: Experiment artifacts
+          name: image-grid-artifact
           path: ./images
         env:
           retention-days: 7
 
   report:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: default
+      labels: [self-hosted, gpu]
     container:
       image: iterativeai/cml:0-dvc2-base1
-      options: --ipc=host
     needs: train-job
     env:
       REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
+      - name: Clone repo
+        uses: actions/checkout@v3
         with:
-          name: Experiment artifacts
+          fetch-depth: 0
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: image-grid-artifact
+          path: ./images
       - name: Run report
-        run: sh ./scripts/report.sh
+        run: |
+          ls -la
+          sh ./scripts/report.sh
