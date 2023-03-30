@@ -7,7 +7,7 @@ train:
   'class_prompt': 'a photo of a person'
   'image_size': 512
   'learning_rate': 0.000003
-  steps: 600
+  steps: 800
   seed: 42424242
   
 infere:
