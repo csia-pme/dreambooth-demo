@@ -59,7 +59,7 @@ launch-runner:
     - name: Deploy runner on self-hosted k8s
       env:
         REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
-        KUBERNETES_CONFIGURATION: $ {{ secrets.KUBERNETES_CONFIGURATION }}}
+        KUBERNETES_CONFIGURATION: ${{ secrets.KUBERNETES_CONFIGURATION }}
       run: |
         cml runner launch \
             --cloud=kubernetes \
