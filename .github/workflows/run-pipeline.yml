@@ -6,10 +6,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  train-job:
+  launch-runner:
     runs-on: 
       group: default
-      labels: [self-hosted, gpu]
+      labels: [self-hosted, cml-gpu]
+    steps:
+      - uses: iterative/setup-cml@v1
+      - uses: actions/checkout@v3
+      - name: Deploy runner on EC2
+        env:
+          REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
+          KUBERNETES_CONFIGURATION: $ {{ secrets.KUBERNETES_CONFIGURATION }}}
+        run: |
+          cml runner launch \
+              --cloud=kubernetes \
+              --labels=cml-gpu
+  train-job:
+    runs-on:
+      labels: [self-hosted, cml-gpu]
     container:
       image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
     env:
@@ -48,8 +62,7 @@ jobs:
 
   report:
     runs-on:
-      group: default
-      labels: [self-hosted, gpu]
+      labels: [self-hosted, cml-gpu]
     container:
       image: iterativeai/cml:0-dvc2-base1
     needs: train-job
