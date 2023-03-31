@@ -48,10 +48,15 @@ launch-runner:
   runs-on:
     group: default
     labels: [self-hosted]
+  container:
+    image: ubuntu:latest
   steps:
-    - uses: iterative/setup-cml@v1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
     - uses: actions/checkout@v3
-    - name: Deploy runner on EC2
+    - uses: iterative/setup-cml@v1
+    - name: Deploy runner on self-hosted k8s
       env:
         REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
         KUBERNETES_CONFIGURATION: $ {{ secrets.KUBERNETES_CONFIGURATION }}}
