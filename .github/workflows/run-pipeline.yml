@@ -2,7 +2,7 @@ name: run-pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/cml-runner]
   workflow_dispatch:
 
 jobs:
