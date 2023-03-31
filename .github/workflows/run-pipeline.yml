@@ -9,7 +9,7 @@ jobs:
   launch-runner:
     runs-on: 
       group: default
-      labels: [self-hosted, cml-gpu]
+      labels: [self-hosted]
     steps:
       - uses: iterative/setup-cml@v1
       - uses: actions/checkout@v3
@@ -26,6 +26,7 @@ jobs:
       labels: [self-hosted, cml-gpu]
     container:
       image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
+    needs: launch-runner
     env:
       PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
     steps:
