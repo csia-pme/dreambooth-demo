@@ -11,7 +11,7 @@ This is a simple experiment to MLOpsify the DreamBooth project using DVC and CML
       - [Create a Namespace](#create-a-namespace)
       - [Configure the Namespace](#configure-the-namespace)
     - [Configure MinIO](#configure-minio)
-    - [Configure MiniKube](#configure-minikube)
+    - [(alternative) Configure MiniKube](#alternative-configure-minikube)
   - [Run the Experiment on the Cluster Manually](#run-the-experiment-on-the-cluster-manually)
     - [Connect to the Environment](#connect-to-the-environment)
       - [Create the K8s Pod](#create-the-k8s-pod)
@@ -125,7 +125,7 @@ You will need to configure MinIO to be able to access the data. To do this you c
 - Click on **Create Bucket**
   As this experiment requires a lot of VRAM we recommend you run it on a GPU enabled machine with more than 24Go of VRAM. We used 2x Nvidia A40 GPUs with 48 Go of VRAM but you can probably get away with less if you edit the training script to use less VRAM. (see https://github.com/huggingface/diffusers/tree/main/examples/dreambooth for more details on possible configurations of the training script)
 
-### Configure MiniKube
+### (alternative) Configure MiniKube
 
 If you wish to run the experiment locally you can use MiniKube.
 
@@ -166,7 +166,7 @@ As this experiment requires a lot of VRAM we recommend you run it on a GPU enabl
 <center>
 
 ```mermaid
-graph TD
+graph LR
 B[Clone the rep\n <i>git clone</i>]
 B --> C[Install the requirements\n <i>scripts/installation.sh</i>]
 C --> D[pull the data\n <i>dvc pull</i>]
@@ -358,7 +358,7 @@ dvc remote add myremote s3://<your bucket name> && \
 
 > **Note :** Replace `<your bucket name>` with the name of the bucket you want to use.
 
-Next, you can add the MinIO credentials to the DVC config with the following command :
+Next, you can add the MinIO credentials to the DVC config with the following command , it will prompt you to provide your secret access key :
 
 ```bash
 echo -n 'MinIO S3 Secret Access Key : ' && \
@@ -599,6 +599,17 @@ Otherwise, the output of the checkpoint will be lacking the `unet/` folder and i
 #### Create the DVC Pipeline
 
 This has already been done in this repository. You can find the pipeline in the `./dvc` folder. The pipeline is composed of 3 stages : `prepare`, `train` and `infer`. The following is a description of each stage and the commands used to create them.
+
+```mermaid
+flowchart TD
+	node1["data/images"]
+	node7["infere"]
+	node8["prepare"]
+	node9["train"]
+	node1-->node8
+	node8-->node9
+	node9-->node7
+```
 
 ##### Add Preparation Stage
 
