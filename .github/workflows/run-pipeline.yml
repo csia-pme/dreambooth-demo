@@ -15,9 +15,9 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: '14'
-      - uses: iterative/setup-cml@v1
+          node-version: '16'
       - uses: actions/checkout@v3
+      - uses: iterative/setup-cml@v1
       - name: Deploy runner on self-hosted k8s
         env:
           REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
