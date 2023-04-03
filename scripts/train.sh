@@ -11,7 +11,7 @@ mkdir -p $CLASS_DIR
 
 INSTANCE_PROMPT=$(yq -r '.train.instance_prompt' params.yaml)
 CLASS_PROMPT=$(yq -r '.train.class_prompt' params.yaml)
-IMAGE_SIZE=$(yq -r '.train.image_size' params.yaml)
+IMAGE_SIZE=$(yq -r '.image_size' params.yaml)
 LEARNING_RATE=$(yq -r '.train.learning_rate' params.yaml)
 TRAIN_STEPS=$(yq -r '.train.steps' params.yaml)
 SEED=$(yq -r '.train.seed' params.yaml)

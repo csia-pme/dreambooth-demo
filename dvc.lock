@@ -43,24 +43,24 @@ stages:
       md5: 0adcd21fb35c160d7cc6a5b8592059c1.dir
       size: 17275215639
       nfiles: 25
-  infere:
-    cmd: python3 scripts/infere.py
+  infer:
+    cmd: python3 scripts/infer.py
     deps:
     - path: models
       md5: 0adcd21fb35c160d7cc6a5b8592059c1.dir
       size: 17275215639
       nfiles: 25
-    - path: scripts/infere.py
+    - path: scripts/infer.py
       md5: 38204d4e76d1cc524bd1a3b117856d95
       size: 1023
     params:
       params.yaml:
-        infere.guidance: 7.5
-        infere.infere_seed: 42424242
-        infere.number_images: 4
-        infere.prompt: a photo of sks person, on a caribbean island, high definition,
+        infer.guidance: 7.5
+        infer.infer_seed: 42424242
+        infer.number_images: 4
+        infer.prompt: a photo of sks person, on a caribbean island, high definition,
           detailed, beautiful, glossy eyes, facing camera
-        infere.steps: 50
+        infer.steps: 50
     outs:
     - path: images
       md5: 75fe1f09797f6e9786643f80d39af08a.dir

@@ -23,16 +23,16 @@ stages:
     - train.seed
     outs:
     - models
-  infere:
-    cmd: python3 scripts/infere.py
+  infer:
+    cmd: python3 scripts/infer.py
     deps:
     - models
-    - scripts/infere.py
+    - scripts/infer.py
     params:
-    - infere.prompt
-    - infere.guidance
-    - infere.infere_seed
-    - infere.number_images
-    - infere.steps
+    - infer.prompt
+    - infer.guidance
+    - infer.infer_seed
+    - infer.number_images
+    - infer.steps
     outs:
     - images

@@ -1,18 +1,16 @@
-prepare:
-  size: 512
+'image_size': 512
 
 train:
   'model_name': 'runwayml/stable-diffusion-v1-5'
   'instance_prompt': 'a photo of sks person'
   'class_prompt': 'a photo of a person'
-  'image_size': 512
   'learning_rate': 0.000003
   steps: 600
   seed: 42424242
   
-infere:
+infer:
   'number_images': 4
   prompt: 'a vacation photo of sks person, on a caribbean island, high definition, detailed, beautiful, glossy eyes, facing camera'
   steps: 50
   guidance: 7.5
-  'infere_seed': 42424242
+  'infer_seed': 42424242

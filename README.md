@@ -36,11 +36,11 @@ This is a simple experiment to MLOpsify the DreamBooth project using DVC and CML
       - [Configure PAT as a Secret in your Cluster](#configure-pat-as-a-secret-in-your-cluster)
       - [Deploy the GitHub Self-hosted Runner](#deploy-the-github-self-hosted-runner)
     - [Verify Workflows](#verify-workflows)
-  - [Multi-GPU Checkpoint Inference](#multi-gpu-checkpoint-inference)
+  - [Multi-GPU Checkpoint infernce](#multi-gpu-checkpoint-infernce)
   - [Create the DVC Pipeline](#create-the-dvc-pipeline)
     - [Add Preparation Stage](#add-preparation-stage)
     - [Add Train Stage](#add-train-stage)
-    - [Add Inference Stage](#add-inference-stage)
+    - [Add infernce Stage](#add-infernce-stage)
   - [Clean up](#clean-up)
   - [Resources](#resources)
   - [Contributing](#contributing)
@@ -70,7 +70,7 @@ B --> C[Use the new model to create images of the subject]
 
 - VPN connection to the IICT network
 - Access to the IICT Kubernetes cluster (https://rancher.iict.ch/)
-- Access to IICT MinIo (https://minio.iict.ch)
+- Access to IICT MinIo (https://minio-aii.iict.ch)
 - Kubernetes CLI ([`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
 
 ## Setup
@@ -123,7 +123,6 @@ You will need to configure MinIO to be able to access the data. To do this you c
 - Click on **Create a new bucket**
 - Enter the name of the bucket you want to create
 - Click on **Create Bucket**
-  As this experiment requires a lot of VRAM we recommend you run it on a GPU enabled machine with more than 24Go of VRAM. We used 2x Nvidia A40 GPUs with 48 Go of VRAM but you can probably get away with less if you edit the training script to use less VRAM. (see https://github.com/huggingface/diffusers/tree/main/examples/dreambooth for more details on possible configurations of the training script)
 
 ### Configure MiniKube
 
@@ -155,7 +154,7 @@ As this experiment requires a lot of VRAM we recommend you run it on a GPU enabl
 
 > You can get a look at the `gitlab-ci.yml` file to see the pipeline execution steps.
 
-> You will need the full context of this repository to run the experiment
+> You will need the full content of this repository to run the experiment
 
 <div class="center">
 <h3>
@@ -172,7 +171,7 @@ B --> C[Install the requirements\n <i>scripts/installation.sh</i>]
 C --> D[pull the data\n <i>dvc pull</i>]
 D -- manual --> E[Prepare the data \n <i>scripts/prepare.sh</i>]
 E --> F[Train the model\n <i>scripts/train.sh</i>]
-F --> G[Infere images \n <i>scripts/inference.sh</i>]
+F --> G[infer images \n <i>scripts/infernce.sh</i>]
 G -- if in CI --> H[Report the results \n <i>scripts/report.sh</i>]
 D -- with dvc --> I[Reproduce the experiment \n <i>dvc repro</i>]
 I -- if in CI ---> H
@@ -385,7 +384,7 @@ Depending on the state of the experiment on the S3 bucket, this command can take
 
 You now have the latest "state" of the experiment both for the code and the data. You can now run the experiment.
 
-You can run the experiment using DVC. It is an abstraction of the three stages `prepre`, `train` and `infere`. Or you can run the stages individually. Depending on the state of the data you pulled from the S3 bucket, DVC might skip some stages as their dependencies are unchanged. If you want to force the execution of a stage you can use the `--force` flag or to force the execution of all stages you can use the `--force-all` flag.
+You can run the experiment using DVC. It is an abstraction of the three stages `prepre`, `train` and `infer`. Or you can run the stages individually. Depending on the state of the data you pulled from the S3 bucket, DVC might skip some stages as their dependencies are unchanged. If you want to force the execution of a stage you can use the `--force` flag or to force the execution of all stages you can use the `--force-all` flag.
 
 To run all at once with DVC you can do :
 
@@ -593,7 +592,7 @@ github-custom-runner-cst5x-6268k   2/2     Running   0          1m
 
 Congratulation, you have a runner waiting for a job ! Trigger your pipeline to see it in action.
 
-## Multi-GPU Checkpoint Inference
+## Multi-GPU Checkpoint infernce
 
 There is a problem with accelerate when generating checkpoints in a multi-GPU architecture. There are 2 solutions : run without checkpointing or run with a single GPU.
 
@@ -649,27 +648,27 @@ dvc stage add -n train \
   -p train.image_size \
   -p train.learning_rate \
   -p train.steps \
-  -d scripts/train.py \
+  -d scripts/train.sh \
   -d data/prepared \
   -o model \
-  sh scripts/train.py
+  sh scripts/train.sh
 ```
 
-### Add Inference Stage
+### Add infernce Stage
 
 This stage will take the trained model and generate images from it based on a prompt defined in the params.yaml file. The output of this stage will be in the `/images` folder.
 
 ```bash
-dvc stage add -n infere \
-  -p infere.prompt \
-  -p infere.guidance \
-  -p infere.infere_seed \
-  -p infere.number_images \
-  -p infere.steps \
-  -d scripts/infere.py \
+dvc stage add -n infer \
+  -p infer.prompt \
+  -p infer.guidance \
+  -p infer.infer_seed \
+  -p infer.number_images \
+  -p infer.steps \
+  -d scripts/infer.py \
   -d models \
   -o images \
-  python3 scripts/infere.py
+  python3 scripts/infer.py
 ```
 
 ## Clean up
