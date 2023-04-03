@@ -23,7 +23,9 @@ jobs:
         run: |
           cml runner launch \
               --cloud=kubernetes \
-              --labels=cml-gpu
+              --labels=cml-gpu \
+              --name=iict-cml-runner
+
   train-job:
     runs-on:
       labels: [self-hosted, cml-gpu]
