@@ -21,8 +21,8 @@ jobs:
           REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
           KUBERNETES_CONFIGURATION_BASE64: ${{ secrets.KUBERNETES_CONFIGURATION_BASE64 }}
         run: |
-          echo $KUBERNETES_CONFIGURATION_BASE64
-          export KUBERNETES_CONFIGURATION=$(echo $KUBERNETES_CONFIGURATION_BASE64 | base64 --decode)
+          cat $KUBERNETES_CONFIGURATION_BASE64
+          export KUBERNETES_CONFIGURATION=$(cat $KUBERNETES_CONFIGURATION_BASE64 | base64 --decode)
           cml runner launch \
               --cloud=kubernetes \
               --labels=cml-gpu
