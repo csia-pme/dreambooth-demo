@@ -37,10 +37,10 @@ This is a simple experiment to MLOpsify the DreamBooth project using DVC and CML
       - [Deploy the GitHub Self-hosted Runner](#deploy-the-github-self-hosted-runner)
     - [Verify Workflows](#verify-workflows)
   - [Multi-GPU Checkpoint Inference](#multi-gpu-checkpoint-inference)
-    - [Create the DVC Pipeline](#create-the-dvc-pipeline)
-      - [Add Preparation Stage](#add-preparation-stage)
-      - [Add Train Stage](#add-train-stage)
-      - [Add Inference Stage](#add-inference-stage)
+  - [Create the DVC Pipeline](#create-the-dvc-pipeline)
+    - [Add Preparation Stage](#add-preparation-stage)
+    - [Add Train Stage](#add-train-stage)
+    - [Add Inference Stage](#add-inference-stage)
   - [Clean up](#clean-up)
   - [Resources](#resources)
   - [Contributing](#contributing)
@@ -267,7 +267,7 @@ Wed Mar 22 07:48:09 2023
 > You need to have a personal access token to clone the repo. You should make your own and have the possibility to save it in a file in the `./secrets` folder if you want for further use, the folder should be ignored by Git at all time.
 
 ```bash
-git clone https://gitlab.com/AdrienAllemand/dreambooth-api.git
+git clone https://github.com/csia-pme/dreambooth-example-with-mlops
 ```
 
 Most of the following steps are run from the root of the repo.
@@ -353,21 +353,23 @@ You can create the file with the following command :
 
 ```bash
 dvc remote add myremote s3://<your bucket name> && \
-    dvc remote modify myremote endpointurl https://minio-aii.iict.ch
+    dvc remote modify myremote endpointurl <your minio url>
 ```
 
-> **Note :** Replace `<your bucket name>` with the name of the bucket you want to use.
+> **Note :** Replace `<your bucket name>` with the name of the bucket you want to use and `<your minio url>` with the url of your minio instance.
 
 Next, you can add the MinIO credentials to the DVC config with the following command :
 
 ```bash
 echo -n 'MinIO S3 Secret Access Key : ' && \
     read -s MINIO_SECRET_ACCESS_KEY && \
-    dvc remote modify --local myremote access_key_id minio && \
+    dvc remote modify --local myremote access_key_id <your minio user> && \
     dvc remote modify --local myremote secret_access_key $MINIO_SECRET_ACCESS_KEY && \
     unset MINIO_SECRET_ACCESS_KEY && \
     echo -e '\nAdded MinIO credentials to DVC config'
 ```
+
+> **Note :** Replace `<your minio user>` with the user you want to use to access the bucket.
 
 > **WARNING :** You should not store secrets in the `~/.dvc/config` file. You should use the `--local` flag to store the secret in the local config file. This file is ignored by Git. See the [DVC config documentation](https://dvc.org/doc/command-reference/config#description) for more information.
 
@@ -412,7 +414,7 @@ We want our GitLab pipeline to execute within the Kubernetes cluster. To do so w
 
 > See https://docs.gitlab.com/runner/install/kubernetes.html
 
-> https://www.youtube.com/watch?v=0Fes86qtBSc
+> Gitlab runner on kubernetes tutorial : https://www.youtube.com/watch?v=0Fes86qtBSc
 
 Using helm we install the gitlab runner on the cluster
 
@@ -437,7 +439,7 @@ gitlabUrl: https://gitlab.com/
 ```
 
 > if you get a 401 error when trying to register the runner, check that the url is correct and is using https.
->
+
 > We also need to add the runnerRegistrationToken. You can get it directly from your gitlab UI > Repository > Settings > CI/CD > Runners > Expand the runner > Copy the token.
 
 The mentioned video stores it directly in the `values.yaml` file, it's not a good practice to store secrets in the configuration file. We will use a Kubernetes secret to store the token then update the `runners.secret` value in `values.yaml` with the name of the secret.
@@ -515,7 +517,9 @@ You should now see your runner in the GitLab UI > Repository > Settings > CI/CD 
 
 Let's start by installing the GitHub runner on the cluster. You can find the documentation of ARC [here](https://github.com/actions/actions-runner-controller).
 
-> **Note : ** you need to choose what level you want to register your runner against : you can register it at a repository level or at an organization level. If you choose to register it at an organization level, you will need to specify the repository name in the `spec.repository` field of the runner, if you choose to register it at a organization level, you will need to specify the organization name in the `spec.organization` field of the runner. This is done in the 'github-runner-deployment.yaml' file.
+> **Note : ** you need to choose what level you want to register your runner against
+
+You can register it at a repository level or at an organization level. If you choose to register it at an organization level, you will need to specify the repository name in the `spec.repository` field of the runner, if you choose to register it at a organization level, you will need to specify the organization name in the `spec.organization` field of the runner. This is done in the 'github-runner-deployment.yaml' file.
 
 #### Install cert-manager in your cluster
 
@@ -534,6 +538,8 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 Select the `repo` scope (Full control).
 
 For more information, see "[Creating a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)."
+
+> Note you will need extra permissions if your runner is registered at the organization level such as `admin:org`, `admin:org_hook`, `notifications`, `read:public_key`, `read:repo_hook`, `repo, workflow`
 
 #### Configure ARC
 
@@ -561,6 +567,8 @@ echo -n 'Enter the GitHub PAT : ' && \
 
 The GitHub runner configuration is stored at `k8s/github-runner-deployment.yaml` file.
 
+It creates/updates a Service Account, associated Role and a RunnerDeployment ensuring there is always a runner listening for a pipeline job.
+
 > **Note :** If you want to use your own repo url, update the `k8s/github-runner-deployment.yaml` file with your repository url.
 
 Apply the configuration to the cluster.
@@ -583,6 +591,8 @@ NAME                               READY   STATUS    RESTARTS   AGE
 github-custom-runner-cst5x-6268k   2/2     Running   0          1m
 ```
 
+Congratulation, you have a runner waiting for a job ! Trigger your pipeline to see it in action.
+
 ## Multi-GPU Checkpoint Inference
 
 There is a problem with accelerate when generating checkpoints in a multi-GPU architecture. There are 2 solutions : run without checkpointing or run with a single GPU.
@@ -596,11 +606,11 @@ accelerate launch --num_processes=1 --gpu_ids=0 ./diffusers/examples/dreambooth/
 
 Otherwise, the output of the checkpoint will be lacking the `unet/` folder and it will be impossible to make images from that checkpoint.
 
-#### Create the DVC Pipeline
+## Create the DVC Pipeline
 
 This has already been done in this repository. You can find the pipeline in the `./dvc` folder. The pipeline is composed of 3 stages : `prepare`, `train` and `infer`. The following is a description of each stage and the commands used to create them.
 
-##### Add Preparation Stage
+### Add Preparation Stage
 
 This stage will take images in the `data/images` folder and prepare them for training. It will crop them to the size specified in the `prepare.size` parameter (in pixel). The output of this stage will be in the `data/prepared` folder.
 
@@ -626,7 +636,7 @@ dvc stage add -n prepare \
   python3 scripts/prepare.py
 ```
 
-##### Add Train Stage
+### Add Train Stage
 
 This stage will take the prepared images and train the model. The output of this stage will be in the `model/` folder.
 
@@ -645,7 +655,7 @@ dvc stage add -n train \
   sh scripts/train.py
 ```
 
-##### Add Inference Stage
+### Add Inference Stage
 
 This stage will take the trained model and generate images from it based on a prompt defined in the params.yaml file. The output of this stage will be in the `/images` folder.
 
