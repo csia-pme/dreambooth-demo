@@ -21,7 +21,6 @@ jobs:
           REPO_TOKEN: ${{ secrets.CML_PAT_TOKEN }}
           KUBERNETES_CONFIGURATION: ${{ secrets.KUBERNETES_CONFIGURATION }}
         run: |
-          mkdir ~/.kube && printenv KUBERNETES_CONFIGURATION > ~/.kube/config && kubectl get pods
           cml runner launch \
               --cloud=kubernetes \
               --labels=cml-gpu \
