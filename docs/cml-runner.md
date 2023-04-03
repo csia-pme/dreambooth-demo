@@ -21,11 +21,13 @@ end
 
 note over User: User pushes code to Github
 User->>+Workflow: Trigger workflow
+Self-Hosted-Runner->>Workflow: Listens for jobs
 Workflow->>+Self-Hosted-Runner: Run workflow step 1
 note over Self-Hosted-Runner: uses: iterative/setup-cml@v1 <br/>name: Deploy runner on k8s <br/> run: cml runner launch
 Self-Hosted-Runner->>+CML-Runner: Creates a Github runner
-CML-Runner->>-Workflow: Listens for jobs
+CML-Runner->>-Self-Hosted-Runner: Created
 Self-Hosted-Runner->>-Workflow: End step 1
+CML-Runner->>Workflow: Listens for jobs
 
 Workflow->>+CML-Runner: Run workflow step 2
 CML-Runner->>+CML-Runner-Pod: Run workflow step 2
