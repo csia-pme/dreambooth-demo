@@ -14,6 +14,7 @@ jobs:
       image: nvidia/cuda:12.0.1-runtime-ubuntu22.04
     env:
       PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip
+      GOOGLE_APPLICATION_CREDENTIALS: '~/.config/gcloud/dvc-google-service-account-key.json'
     steps:
       - name: GPU Info
         run: nvidia-smi
@@ -32,10 +33,10 @@ jobs:
 #        run: |
 #          dvc remote modify --local myremote access_key_id ${{ secrets.MINIO_KEY_ID }}
 #          dvc remote modify --local myremote secret_access_key ${{ secrets.MINIO_ACCESS_KEY }}
-      - name: Login to Google Cloud
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}'
+      - name: Configure google credentials
+        run: |
+          mkdir -p ~/.config/gcloud
+          echo ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} > ~/.config/gcloud/dvc-google-service-account-key.json
       - name: Pull data from S3
         run:  | 
           ls -la
@@ -73,3 +74,10 @@ jobs:
         run: |
           ls -la
           sh ./scripts/report.sh
+
+          gcloud projects add-iam-policy-binding dreambooth-experience \
+    --member="serviceAccount:dvc-service-account@dreambooth-experience.iam.gserviceaccount.com" \
+    --role="roles/viewer"
+
+    gcloud iam service-accounts keys create ~/.config/gcloud/dvc-google-service-account-key.json \
+    --iam-account=dvc-service-account@dreambooth-experience.iam.gserviceaccount.com
