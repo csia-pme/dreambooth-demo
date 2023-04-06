@@ -74,10 +74,3 @@ jobs:
         run: |
           ls -la
           sh ./scripts/report.sh
-
-          gcloud projects add-iam-policy-binding dreambooth-experience \
-    --member="serviceAccount:dvc-service-account@dreambooth-experience.iam.gserviceaccount.com" \
-    --role="roles/viewer"
-
-    gcloud iam service-accounts keys create ~/.config/gcloud/dvc-google-service-account-key.json \
-    --iam-account=dvc-service-account@dreambooth-experience.iam.gserviceaccount.com
